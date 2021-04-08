@@ -1,5 +1,6 @@
 package com.mez.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
@@ -11,6 +12,7 @@ public class User {
     private String phone;
     private String photo;
 
+    @JsonIgnore
     private String password;
     private boolean isAdmin;
 }

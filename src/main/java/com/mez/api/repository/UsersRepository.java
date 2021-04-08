@@ -22,8 +22,31 @@ public class UsersRepository {
         }
     }
 
-    public List<User> getAll() {
-        return dao.executeListQuery("SELECT * FROM users", User.class);
+    public List<User> get(int limit, int offset) {
+        return dao.executeListQuery(
+                "SELECT * FROM users ORDER BY id LIMIT " + limit + " OFFSET " + offset,
+                User.class
+        );
+    }
+
+    public User getById(long id) {
+        return dao.executeQuery("SELECT * FROM users WHERE id = " + id, User.class);
+    }
+
+    public User getByMailAndPassword(String mail, String password) {
+        List<User> possibleUser = dao.executeListQuery(
+                "SELECT * FROM users WHERE mail = \"" + mail + "\" AND password = \"" + password + "\"",
+                User.class
+        );
+        return possibleUser.size() > 0 ? possibleUser.get(0) : null;
+    }
+
+    public User getByPhoneAndPassword(String phone, String password) {
+        List<User> possibleUser = dao.executeListQuery(
+                "SELECT * FROM users WHERE phone = \"" + phone + "\" AND password = \"" + password + "\"",
+                User.class
+        );
+        return possibleUser.size() > 0 ? possibleUser.get(0) : null;
     }
 
     public boolean save(User user) {
