@@ -1,5 +1,17 @@
 USE v27lxlsekmhtr59u;
 
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    googleId VARCHAR(100) UNIQUE,
+	mail VARCHAR(50) NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    phone VARCHAR(17),
+    photo VARCHAR(200),
+    password VARCHAR(256),
+    isAdmin BOOLEAN
+);
+
 DROP TABLE IF EXISTS engineTypes;
 CREATE TABLE engineTypes (
 	name VARCHAR(70) NOT NULL PRIMARY KEY,
