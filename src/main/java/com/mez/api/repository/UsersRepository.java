@@ -41,6 +41,10 @@ public class UsersRepository {
         return possibleUser.size() > 0 ? possibleUser.get(0) : null;
     }
 
+    public User getByGoogleId(String googleId) {
+        return dao.executeQuery("SELECT * FROM users WHERE googleId = " + googleId, User.class);
+    }
+
     public User getByPhoneAndPassword(String phone, String password) {
         List<User> possibleUser = dao.executeListQuery(
                 "SELECT * FROM users WHERE phone = \"" + phone + "\" AND password = \"" + password + "\"",

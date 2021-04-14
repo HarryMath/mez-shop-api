@@ -18,10 +18,9 @@ public class EngineController {
     @GetMapping("/engines")
     public Object getEngines(
             @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
-            @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-            @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails
+            @RequestParam(name = "offset", required = false, defaultValue = "0") int offset
     ) {
-        return engineService.get(offset, amount, withDetails);
+        return engineService.getPreview(offset, amount);
     }
 
 }

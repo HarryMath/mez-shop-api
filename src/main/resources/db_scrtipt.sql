@@ -15,7 +15,9 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS engineTypes;
 CREATE TABLE engineTypes (
 	name VARCHAR(70) NOT NULL PRIMARY KEY,
-    description TEXT
+    photo VARCHAR(200),
+    shortDescription TEXT,
+    fullDescription TEXT
 );
 
 DROP TABLE IF EXISTS manufacturers;
@@ -26,24 +28,38 @@ CREATE TABLE manufacturers (
 DROP TABLE IF EXISTS engines;
 CREATE TABLE engines (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    
     name VARCHAR(30) NOT NULL,
     manufacturer VARCHAR(30) NOT NULL,
     type VARCHAR(30) NOT NULL,
     price FLOAT4 NOT NULL,
-    
     photo TEXT,
-    
+
     CONSTRAINT engine_manufact FOREIGN KEY (manufacturer) REFERENCES manufacturers(name),
     CONSTRAINT engine_type FOREIGN KEY (type) REFERENCES engineTypes(name)
 );
 
 DROP TABLE IF EXISTS characteristics;
 CREATE TABLE characteristics (
-    engineId int NOT NULL,
-    name VARCHAR(20) NOT NULL,
-    value VARCHAR(20) NOT NULL,
+    engineId INT NOT NULL,                        
+    power FLOAT NOT NULL,                         # P (кВт)
+    frequency INT NOT NULL,                       # Номинальная частота вращения (об/мин)
+    efficiency INT NOT NULL,                      # КПД (%)
+    cosFi float NOT NULL,                         # cos fi
+    electricityNominal220 float,                  # ток номинальный (А) для напряжения 220В
+    electricityNominal380 float,                  # ток номинальный (А) для напряжения 380В
+    electricityRatio float,                       # Iп/Iн
+    momentsRatio float,                            # Mп/Мн
+    momentsMaxRatio float,                         # Mmax/Мн
+    momentsMinRatio float,                         # Mmin/Мн
+    mass float,                                   # масса (кг)
     CONSTRAINT engine_character FOREIGN KEY (engineId) REFERENCES engines(id)
+);
+
+DROP TABLE IF EXISTS photos;
+CREATE TABLE photos (
+    engineId INT NOT NULL,                        
+    photo TEXT NOT NULL,
+    CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id)
 );
 
 INSERT INTO manufacturers
@@ -51,20 +67,20 @@ INSERT INTO manufacturers
 ('ОАО «Могилевлифтмаш»');
 
 INSERT INTO engineTypes
-(name, description)
+(name, shortDescription, fullDescription)
 values
-('Стандартные двигатели', ''),
-('Двигатели для нефтегазовой промышленности', ''),
-('Двигатели для объектов использования ядерного топлива', ''),
-('Многоскоростные двигатели', ''),
-('Двигатели с электромагнитным тормозом', ''),
-('Двигатели с повышенным скольжениемм', ''),
-('Тяговые двигатели', ''),
-('Узкоспециализированные двигатели', ''),
-('Встраиваемые двигатели', ''),
-('Бытовые однофазные двигатели типа ДАК', ''),
-('Товары народного потребления', ''),
-('Электроакустические приборы', '');
+('Стандартные двигатели', 'короткое описание категории', ''),
+('Двигатели для нефтегазовой промышленности', 'короткое описание категории', ''),
+('Двигатели для объектов использования ядерного топлива', 'короткое описание категории', ''),
+('Многоскоростные двигатели', 'короткое описание категории', ''),
+('Двигатели с электромагнитным тормозом', 'короткое описание категории', ''),
+('Двигатели с повышенным скольжениемм', 'короткое описание категории', ''),
+('Тяговые двигатели', 'короткое описание категории', ''),
+('Узкоспециализированные двигатели', 'короткое описание категории', ''),
+('Встраиваемые двигатели', 'короткое описание категории', ''),
+('Бытовые однофазные двигатели типа ДАК', 'короткое описание категории', ''),
+('Товары народного потребления', 'короткое описание категории', ''),
+('Электроакустические приборы', 'короткое описание категории', '');
 
 select * from engines;
 
@@ -91,13 +107,14 @@ values
 insert into characteristics 
 (engineId, name, value)
 values 
-(8, 'вес', '5.1кг'),
-(8, 'частота вращения', '2720 об/мин'),
-(8, 'мощность', '0.265 кВт'),
-(8, 'кпд', '73%'),
+(1, 'вес', '5.1кг'),
+(1, 'частота вращения', '2720 об/мин'),
+(1, 'мощность', '0.265 кВт'),
+(1, 'кпд', '73%'),
 
-(12, 'вес', '2.9кг'),
-(12, 'частота вращения', '1930 об/мин'),
-(12, 'мощность', '0.311 кВт'),
-(12, 'кпд', '78%');
+(2, 'вес', '2.9кг'),
+(2, 'частота вращения', '1930 об/мин'),
+(2, 'мощность', '0.311 кВт'),
+(2, 'кпд', '78%');
 
+SELECT * FROM engineTypes;

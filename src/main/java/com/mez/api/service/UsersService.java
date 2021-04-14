@@ -24,6 +24,12 @@ public class UsersService {
         return usersRepository.get(amount, offset);
     }
 
+    public User registerWithGoogle(User user) {
+        return usersRepository.save(user) ?
+                usersRepository.getByGoogleId(user.getGoogleId()) :
+                null;
+    }
+
     public User getById(long id) {
         return usersRepository.getById(id);
     }

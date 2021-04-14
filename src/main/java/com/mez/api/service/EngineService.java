@@ -1,19 +1,18 @@
 package com.mez.api.service;
 
-import com.mez.api.models.Characteristic;
+import com.mez.api.models.CharacteristicsRow;
 import com.mez.api.models.DTO.EngineDetails;
+import com.mez.api.models.DTO.EnginePreview;
 import com.mez.api.models.Engine;
+import com.mez.api.models.EngineType;
 import com.mez.api.repository.EngineRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class EngineService {
@@ -27,36 +26,44 @@ public class EngineService {
         this.modelMapper = new ModelMapper();
     }
 
-    public Object get(
-            int offset,
-            int limit,
-            boolean withDetails
-    ) {
+    public List<EnginePreview> getPreview(int offset, int limit) {
         List<Engine> engines = engineRepository.get(limit, offset);
+        return convertToPreview(engines);
+    }
+
+    public Object getOne(int id, boolean withDetails) {
+        Engine engine = engineRepository.getById(id);
         return withDetails ?
-                convertToDetails(engines) :
-                engines;
+                convertToDetails(engine) :
+                engine;
+    }
+
+    public EnginePreview convertToPreview(Engine engine) {
+        EnginePreview enginePreview = modelMapper.map(engine, EnginePreview.class);
+        enginePreview.setCharacteristics(
+                engineRepository.getCharacteristics(engine.getId())
+        );
+        return enginePreview;
     }
 
     public EngineDetails convertToDetails(Engine engine) {
         EngineDetails engineDetails = modelMapper.map(engine, EngineDetails.class);
-        List<Characteristic> characteristicsList = engineRepository.getCharacteristics(engine.getId());
-        Map<String, String> characteristicsMap = new HashMap<>();
-        characteristicsList.forEach(characteristic -> {
-            characteristicsMap.put(characteristic.getName(), characteristic.getValue());
-        });
-        engineDetails.setCharacteristics( characteristicsMap );
+        List<CharacteristicsRow> characteristics = engineRepository.getCharacteristics(engine.getId());
+        List<String> photos = engineRepository.getPhotos(engine.getId());
+        EngineType type = engineRepository.getType(engine.getType());
+        engineDetails.setCharacteristics(characteristics);
+        engineDetails.setType(type);
+        engineDetails.setPhotos(photos);
         return engineDetails;
     }
 
-    public List<EngineDetails> convertToDetails(List<Engine> engines) {
-        List<EngineDetails> enginesWithCharacteristics = new ArrayList<>();
+    public List<EnginePreview> convertToPreview(List<Engine> engines) {
+        List<EnginePreview> enginesWithCharacteristics = new ArrayList<>();
         engines.forEach(engine -> {
             enginesWithCharacteristics.add(
-                    convertToDetails(engine)
+                    convertToPreview(engine)
             );
         });
         return enginesWithCharacteristics;
     }
-
 }

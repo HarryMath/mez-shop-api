@@ -1,7 +1,8 @@
 package com.mez.api.repository;
 
-import com.mez.api.models.Characteristic;
+import com.mez.api.models.CharacteristicsRow;
 import com.mez.api.models.Engine;
+import com.mez.api.models.EngineType;
 import com.mez.api.tools.DAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,9 +34,17 @@ public class EngineRepository {
         return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
     }
 
-    public List<Characteristic> getCharacteristics(int engineId) {
+    public List<String> getPhotos(int engineId) {
+        return dao.executeListQuery("SELECT photo FROM photos WHERE engineId = " + engineId, String.class);
+    }
+
+    public EngineType getType(String typeId) {
+        return dao.executeQuery("SELECT * FROM engineTypes WHERE name = \"" + typeId + "\"", EngineType.class);
+    }
+
+    public List<CharacteristicsRow> getCharacteristics(int engineId) {
         return dao.executeListQuery(
                 "SELECT * FROM characteristics WHERE engineId = " + engineId,
-                Characteristic.class);
+                CharacteristicsRow.class);
     }
 }
