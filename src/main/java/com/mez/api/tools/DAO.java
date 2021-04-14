@@ -4,6 +4,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +48,16 @@ public class DAO {
             System.out.println(query);
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public int countQuery(String query) {
+        ScalarHandler<Long> handler = new ScalarHandler<>();
+        try {
+            return queryRunner.query(connection, query, handler).intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 

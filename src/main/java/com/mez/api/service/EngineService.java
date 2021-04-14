@@ -38,6 +38,10 @@ public class EngineService {
                 engine;
     }
 
+    public int getAmount() {
+        return engineRepository.count();
+    }
+
     public EnginePreview convertToPreview(Engine engine) {
         EnginePreview enginePreview = modelMapper.map(engine, EnginePreview.class);
         enginePreview.setCharacteristics(

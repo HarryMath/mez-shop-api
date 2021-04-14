@@ -34,6 +34,11 @@ public class EngineRepository {
         return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
     }
 
+    public int count() {
+        return dao.countQuery("SELECT count(*) FROM engines");
+    }
+
+    @Deprecated
     public List<String> getPhotos(int engineId) {
         return dao.executeListQuery("SELECT photo FROM photos WHERE engineId = " + engineId, String.class);
     }

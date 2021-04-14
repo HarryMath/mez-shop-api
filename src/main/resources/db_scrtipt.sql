@@ -1,4 +1,5 @@
 USE v27lxlsekmhtr59u;
+SET SQL_SAFE_UPDATES = 0;
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -81,8 +82,10 @@ values
 ('Бытовые однофазные двигатели типа ДАК', 'короткое описание категории', ''),
 ('Товары народного потребления', 'короткое описание категории', ''),
 ('Электроакустические приборы', 'короткое описание категории', '');
+UPDATE engineTypes 
+SET fullDescription = 'тут будет плоное описание';
 
-select * from engines;
+select type, count(*) from engines group by type;
 
 insert into engines
 (name, type, manufacturer, photo, price)
@@ -118,3 +121,7 @@ values
 (2, 'кпд', '78%');
 
 SELECT * FROM engineTypes;
+
+insert into photos (engineId, photo) 
+values
+(2, 'photoUrl');
