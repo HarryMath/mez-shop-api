@@ -1,11 +1,8 @@
 package com.mez.api.service;
 
-import com.mez.api.models.EngineType;
 import com.mez.api.repository.CategoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CategoriesService {
@@ -16,7 +13,9 @@ public class CategoriesService {
         this.categoriesRepository = repository;
     }
 
-    public List<EngineType> getAll() {
-        return categoriesRepository.getAll();
+    public Object getAll(boolean withDetails) {
+        return withDetails ?
+                categoriesRepository.getAll() :
+                categoriesRepository.getPreviews();
     }
 }

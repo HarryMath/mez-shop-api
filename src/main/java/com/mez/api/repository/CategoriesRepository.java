@@ -1,5 +1,6 @@
 package com.mez.api.repository;
 
+import com.mez.api.models.DTO.CategoryPreview;
 import com.mez.api.models.EngineType;
 import com.mez.api.tools.DAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,9 @@ public class CategoriesRepository {
 
     public List<EngineType> getAll() {
         return dao.executeListQuery("SELECT * FROM engineTypes", EngineType.class);
+    }
+
+    public List<CategoryPreview> getPreviews() {
+        return dao.executeListQuery("SELECT name, photo, shortDescription FROM engineTypes", CategoryPreview.class);
     }
 }

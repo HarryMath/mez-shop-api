@@ -1,12 +1,11 @@
 package com.mez.api.controllers;
 
-import com.mez.api.models.EngineType;
 import com.mez.api.service.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 public class CategoriesController {
@@ -19,7 +18,9 @@ public class CategoriesController {
     }
 
     @GetMapping("/categories")
-    public List<EngineType> getCategories() {
-        return categoriesService.getAll();
+    public Object getCategories(
+            @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails
+    ) {
+        return categoriesService.getAll(withDetails);
     }
 }
