@@ -1,9 +1,11 @@
 package com.mez.api.tools;
 
+import com.mez.api.models.Engine;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,12 +34,30 @@ public class DAO {
         connection.close();
     }
 
-
     public void executeUpdate(String query) throws SQLException {
         if(connection.isClosed()) openConnection();
         Statement statement = connection.createStatement();
         statement.executeUpdate(query);
         statement.close();
+    }
+
+    public int countQuery(String query) {
+        ScalarHandler<Long> handler = new ScalarHandler<>();
+        try {
+            return queryRunner.query(connection, query, handler).intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public <Type> List<Type> columnQuery(String query) {
+        try {
+            return queryRunner.query(connection, query, new ColumnListHandler<>());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public <Type> Type executeQuery(String query, Class<Type> type) {
@@ -48,16 +68,6 @@ public class DAO {
             System.out.println(query);
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public int countQuery(String query) {
-        ScalarHandler<Long> handler = new ScalarHandler<>();
-        try {
-            return queryRunner.query(connection, query, handler).intValue();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
         }
     }
 

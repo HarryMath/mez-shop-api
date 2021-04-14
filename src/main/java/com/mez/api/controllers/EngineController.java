@@ -35,5 +35,4 @@ public class EngineController {
             @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails) {
         return engineService.getOne(engineId, withDetails);
     }
-
 }

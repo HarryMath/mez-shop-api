@@ -125,3 +125,4 @@ SELECT * FROM engineTypes;
 insert into photos (engineId, photo) 
 values
 (2, 'photoUrl');
+SELECT photo FROM photos WHERE engineId = 2;
