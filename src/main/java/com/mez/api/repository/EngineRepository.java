@@ -24,6 +24,59 @@ public class EngineRepository {
         }
     }
 
+    public int save(Engine engine) throws SQLException {
+        dao.executeUpdate(
+                "INSERT INTO engines (name, type, manufacturer, photo, price) " +
+                        "values ( \"" +
+                        engine.getName() + "\" , \"" +
+                        engine.getType() + "\", \"" +
+                        engine.getManufacturer() + "\", \"" +
+                        engine.getPhoto() + "\", " +
+                        engine.getPrice() + ");"
+        ); // return id of saved engine
+        return dao.countQuery("SELECT max(id) FROM engines");
+    }
+
+    public void savePhotos(List<String> photos, int engineId) {
+        String query = "INSERT INTO photos (engineId, photo)  values ";
+        for(int i = 0; i < photos.size(); i++) {
+            query += "(" + engineId + ", \"" + photos.get(i) + "\")";
+            query += (i == photos.size() - 1 ? ";" : ",");
+        }
+        try {
+            dao.executeUpdate(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCharacteristics(List<CharacteristicsRow> rows, int engineId) {
+        String query = "INSERT INTO characteristics " +
+                "(engineId, power, frequency, efficiency, cosFi, electricityNominal220, electricityNominal380, " +
+                "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio, mass)  values ";
+        for(int i = 0; i < rows.size(); i++) {
+            CharacteristicsRow row = rows.get(i);
+            query += "(" + engineId + ", "
+                    + row.getPower() + ", " +
+                    + row.getFrequency() + ", " +
+                    + row.getEfficiency() + ", " +
+                    + row.getCosFi() + ", " +
+                    + row.getElectricityNominal220() + ", " +
+                    + row.getElectricityNominal380() + ", " +
+                    + row.getElectricityRatio() + ", " +
+                    + row.getMomentsRatio() + ", " +
+                    + row.getMomentsMaxRatio() + ", " +
+                    + row.getMomentsMinRatio() + ", " +
+                    + row.getMass() + ")";
+            query += (i == rows.size() - 1 ? ";" : ",");
+        }
+        try {
+            dao.executeUpdate(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Engine> get(int limit, int offset) {
         return dao.executeListQuery(
                 "SELECT * FROM engines ORDER BY id LIMIT " + limit + " OFFSET " + offset,

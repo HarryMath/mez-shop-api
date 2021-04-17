@@ -41,6 +41,7 @@ CREATE TABLE engines (
 
 DROP TABLE IF EXISTS characteristics;
 CREATE TABLE characteristics (
+	id INT PRIMARY KEY AUTO_INCREMENT,
     engineId INT NOT NULL,                        
     power FLOAT NOT NULL,                         # P (кВт)
     frequency INT NOT NULL,                       # Номинальная частота вращения (об/мин)
@@ -59,7 +60,8 @@ CREATE TABLE characteristics (
 DROP TABLE IF EXISTS photos;
 CREATE TABLE photos (
     engineId INT NOT NULL,                        
-    photo TEXT NOT NULL,
+    photo varchar(150) NOT NULL,
+    PRIMARY KEY (engineId, photo),
     CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id)
 );
 
@@ -126,3 +128,5 @@ insert into photos (engineId, photo)
 values
 (2, 'photoUrl');
 SELECT photo FROM photos WHERE engineId = 2;
+
+SELECT max(id) from engines where name = 's/2';

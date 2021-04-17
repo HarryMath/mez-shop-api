@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CharacteristicsRow {
+    private int id;
     private int engineId;
     private float power;                    // P (кВт)
     private int frequency;                  // Номинальная частота вращения (об/мин)
