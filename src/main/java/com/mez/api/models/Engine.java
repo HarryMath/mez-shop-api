@@ -10,6 +10,7 @@ public class Engine {
     private String manufacturer;
     private String type;
     private float price;
+    private float mass;
 
     private String photo;
 }

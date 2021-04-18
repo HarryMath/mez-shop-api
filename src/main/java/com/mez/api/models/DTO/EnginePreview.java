@@ -12,6 +12,7 @@ public class EnginePreview {
     private String manufacturer;
     private String type;
     private float price;
+    private float mass;
     private String photo;
     private List<CharacteristicsRow> characteristics;
 }

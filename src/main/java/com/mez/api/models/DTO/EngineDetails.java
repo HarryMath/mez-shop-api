@@ -12,6 +12,7 @@ public class EngineDetails {
     private String name;
     private String manufacturer;
     private float price;
+    private float mass;
     private String photo;
 
     private EngineType type;

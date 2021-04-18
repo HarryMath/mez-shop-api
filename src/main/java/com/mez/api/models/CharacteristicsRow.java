@@ -16,5 +16,4 @@ public class CharacteristicsRow {
     private float momentsRatio;             // Mп/Мн
     private float momentsMaxRatio;          // Mmax/Мн
     private float momentsMinRatio;          // Mmin/Мн
-    private float mass;                     // масса (кг)
 }

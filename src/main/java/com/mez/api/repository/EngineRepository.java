@@ -26,13 +26,14 @@ public class EngineRepository {
 
     public int save(Engine engine) throws SQLException {
         dao.executeUpdate(
-                "INSERT INTO engines (name, type, manufacturer, photo, price) " +
+                "INSERT INTO engines (name, type, manufacturer, photo, price, mass) " +
                         "values ( \"" +
                         engine.getName() + "\" , \"" +
                         engine.getType() + "\", \"" +
                         engine.getManufacturer() + "\", \"" +
                         engine.getPhoto() + "\", " +
-                        engine.getPrice() + ");"
+                        engine.getPrice() + ", " +
+                        engine.getMass() + ");"
         ); // return id of saved engine
         return dao.countQuery("SELECT max(id) FROM engines");
     }
@@ -66,8 +67,7 @@ public class EngineRepository {
                     + row.getElectricityRatio() + ", " +
                     + row.getMomentsRatio() + ", " +
                     + row.getMomentsMaxRatio() + ", " +
-                    + row.getMomentsMinRatio() + ", " +
-                    + row.getMass() + ")";
+                    + row.getMomentsMinRatio() + ")";
             query += (i == rows.size() - 1 ? ";" : ",");
         }
         try {

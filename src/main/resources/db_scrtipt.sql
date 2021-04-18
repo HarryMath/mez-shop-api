@@ -50,10 +50,9 @@ CREATE TABLE characteristics (
     electricityNominal220 float,                  # ток номинальный (А) для напряжения 220В
     electricityNominal380 float,                  # ток номинальный (А) для напряжения 380В
     electricityRatio float,                       # Iп/Iн
-    momentsRatio float,                            # Mп/Мн
-    momentsMaxRatio float,                         # Mmax/Мн
-    momentsMinRatio float,                         # Mmin/Мн
-    mass float,                                   # масса (кг)
+    momentsRatio float,                           # Mп/Мн
+    momentsMaxRatio float,                        # Mmax/Мн
+    momentsMinRatio float,                        # Mmin/Мн
     CONSTRAINT engine_character FOREIGN KEY (engineId) REFERENCES engines(id)
 );
 

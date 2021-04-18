@@ -13,6 +13,7 @@ public class EngineUpload {
     private String type;
     private String manufacturer;
     private float price;
+    private float mass;
     private MultipartFile photo;
 
     private List<CharacteristicsRow> characteristics;
