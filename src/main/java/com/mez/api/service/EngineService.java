@@ -8,12 +8,10 @@ import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
 import com.mez.api.repository.EngineRepository;
 
-import com.mez.api.tools.ImageRepository;
 import com.mez.api.tools.ResponseCodes;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,13 +21,11 @@ import java.util.List;
 public class EngineService {
 
     private final EngineRepository engineRepository;
-    private final ImageRepository imageRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    EngineService(EngineRepository repository, ImageRepository imageRepository) {
+    EngineService(EngineRepository repository) {
         this.engineRepository = repository;
-        this.imageRepository = imageRepository;
         this.modelMapper = new ModelMapper();
     }
 
@@ -51,25 +47,26 @@ public class EngineService {
         return engineRepository.count();
     }
 
-    public byte save(EngineUpload engine) {
-        List<String> photos = imageRepository.saveImages(engine.getPhotos());
+    public int save(EngineUpload engine) {
+        List<String> photosUrls = engine.getPhotos();
+        List<CharacteristicsRow> characteristics = engine.getCharacteristics();
         try {
-            int id = engineRepository.save( convertFromUploadDTO(engine) );
-            engineRepository.savePhotos(photos, id);
-            engineRepository.saveCharacteristics(engine.getCharacteristics(), id);
-            return ResponseCodes.SUCCESS;
+            int id = engineRepository.save( convertFormUploadDTO(engine) );
+            if ( photosUrls.size() > 0 ) engineRepository.savePhotos(photosUrls, id);
+            engineRepository.saveCharacteristics(characteristics, id);
+            return id;
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseCodes.DATABASE_ERROR;
         }
     }
 
-    public Engine convertFromUploadDTO(EngineUpload engineUpload) {
-        Engine engine = modelMapper.map(engineUpload, Engine.class);
-        engine.setPhoto(
-                imageRepository.saveImage(engineUpload.getPhoto())
-        );
-        return engine;
+    public byte delete(int id) {
+        return engineRepository.delete(id);
+    }
+
+    public Engine convertFormUploadDTO(EngineUpload engineUpload) {
+        return modelMapper.map(engineUpload, Engine.class);
     }
 
     public EnginePreview convertToPreview(Engine engine) {

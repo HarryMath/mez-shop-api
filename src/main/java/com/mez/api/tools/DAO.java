@@ -42,9 +42,9 @@ public class DAO {
     }
 
     public int countQuery(String query) {
-        ScalarHandler<Long> handler = new ScalarHandler<>();
+        ScalarHandler<Integer> handler = new ScalarHandler<>();
         try {
-            return queryRunner.query(connection, query, handler).intValue();
+            return queryRunner.query(connection, query, handler);
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;

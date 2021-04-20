@@ -4,6 +4,7 @@ import com.mez.api.models.CharacteristicsRow;
 import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
 import com.mez.api.tools.DAO;
+import com.mez.api.tools.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ public class EngineRepository {
     }
 
     public void savePhotos(List<String> photos, int engineId) {
+        if(photos.size() == 0) return;
         String query = "INSERT INTO photos (engineId, photo)  values ";
         for(int i = 0; i < photos.size(); i++) {
             query += "(" + engineId + ", \"" + photos.get(i) + "\")";
@@ -54,7 +56,7 @@ public class EngineRepository {
     public void saveCharacteristics(List<CharacteristicsRow> rows, int engineId) {
         String query = "INSERT INTO characteristics " +
                 "(engineId, power, frequency, efficiency, cosFi, electricityNominal220, electricityNominal380, " +
-                "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio, mass)  values ";
+                "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio)  values ";
         for(int i = 0; i < rows.size(); i++) {
             CharacteristicsRow row = rows.get(i);
             query += "(" + engineId + ", "
@@ -70,6 +72,7 @@ public class EngineRepository {
                     + row.getMomentsMinRatio() + ")";
             query += (i == rows.size() - 1 ? ";" : ",");
         }
+        System.out.println(query);
         try {
             dao.executeUpdate(query);
         } catch (SQLException e) {
@@ -81,6 +84,18 @@ public class EngineRepository {
         return dao.executeListQuery(
                 "SELECT * FROM engines ORDER BY id LIMIT " + limit + " OFFSET " + offset,
                 Engine.class);
+    }
+
+    public byte delete(int id) {
+        try {
+            dao.executeUpdate("DELETE FROM photos WHERE engineId = " + id);
+            dao.executeUpdate("DELETE FROM characteristics WHERE engineId = " + id);
+            dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
+            return ResponseCodes.SUCCESS;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseCodes.DATABASE_ERROR;
+        }
     }
 
     public Engine getById(int id) {

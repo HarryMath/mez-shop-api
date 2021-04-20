@@ -18,11 +18,12 @@ public class ImageRepository {
     private String url;
 
     public String saveImage(MultipartFile file) {
+        if(file == null) return null;
         Cloudinary cloudinary = new Cloudinary(url);
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             return uploadResult.get("url").toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

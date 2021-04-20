@@ -45,7 +45,12 @@ public class EngineController {
     }
 
     @PutMapping("/engines/create")
-    public byte createEngine(@RequestBody EngineUpload engine) {
+    public int createEngine(@RequestBody EngineUpload engine) {
         return engineService.save(engine);
+    }
+
+    @GetMapping("/engines/{id}/delete")
+    public byte deleteEngine(@PathVariable int id) {
+        return engineService.delete(id);
     }
 }

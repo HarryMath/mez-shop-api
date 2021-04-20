@@ -31,9 +31,10 @@ CREATE TABLE engines (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
     manufacturer VARCHAR(30) NOT NULL,
-    type VARCHAR(30) NOT NULL,
+    type VARCHAR(70) NOT NULL,
     price FLOAT4 NOT NULL,
     photo TEXT,
+    mass float,
 
     CONSTRAINT engine_manufact FOREIGN KEY (manufacturer) REFERENCES manufacturers(name),
     CONSTRAINT engine_type FOREIGN KEY (type) REFERENCES engineTypes(name)
@@ -89,43 +90,31 @@ SET fullDescription = 'тут будет плоное описание';
 select type, count(*) from engines group by type;
 
 insert into engines
-(name, type, manufacturer, photo, price)
+(name, type, manufacturer, photo, price, mass)
 values
 (
 	'АИР63А4/2',
 	'Многоскоростные двигатели',
 	'ОАО «Могилевлифтмаш»',
 	'https://www.mez.by/upload/iblock/ad4/ad4f5e8bc3bebbe7396f5fe6301029ae.jpg',
-	6599
+	6599, 3.4
 );
 insert into engines
-(name, type, manufacturer, photo, price)
+(name, type, manufacturer, photo, price, mass)
 values
  (
 	'4BP90L',
 	'Встраиваемые двигатели',
 	'ОАО «Могилевлифтмаш»',
 	'https://www.emotorsdirect.ca/site/ItemImagesResized/Baldor%20503_motors.jpg?resizeid=2&resizeh=250&resizew=310',
-	4234
+	4234, 2.9
 );
-insert into characteristics 
-(engineId, name, value)
-values 
-(1, 'вес', '5.1кг'),
-(1, 'частота вращения', '2720 об/мин'),
-(1, 'мощность', '0.265 кВт'),
-(1, 'кпд', '73%'),
-
-(2, 'вес', '2.9кг'),
-(2, 'частота вращения', '1930 об/мин'),
-(2, 'мощность', '0.311 кВт'),
-(2, 'кпд', '78%');
 
 SELECT * FROM engineTypes;
-
+SELECT * FROM engines ORDER BY id LIMIT 100 OFFSET 0;
 insert into photos (engineId, photo) 
 values
 (2, 'photoUrl');
 SELECT photo FROM photos WHERE engineId = 2;
-
+SELECT * from characteristics;
 SELECT max(id) from engines where name = 's/2';
