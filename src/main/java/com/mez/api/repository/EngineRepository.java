@@ -8,6 +8,7 @@ import com.mez.api.tools.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -37,6 +38,22 @@ public class EngineRepository {
                         engine.getMass() + ");"
         ); // return id of saved engine
         return dao.countQuery("SELECT max(id) FROM engines");
+    }
+
+    public int save(Engine engine, List<CharacteristicsRow> rows, List<String> photos) {
+        try {
+            int id = save( engine );
+            if ( photos.size() > 0 ) savePhotos(photos, id);
+            saveCharacteristics(rows, id);
+            if (engine.getId() > 0) {
+                dao.executeUpdate("UPDATE photos SET engineId = " + id + " WHERE engineId = " + engine.getId());
+                delete(engine.getId());
+            }
+            return id;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseCodes.DATABASE_ERROR;
+        }
     }
 
     public void savePhotos(List<String> photos, int engineId) {

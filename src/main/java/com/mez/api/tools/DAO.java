@@ -29,6 +29,10 @@ public class DAO {
         queryRunner = new QueryRunner();
     }
 
+    public Connection getExtraConnection() throws SQLException {
+        return DriverManager.getConnection(connectionString);
+    }
+
     @SuppressWarnings("unused")
     public void closeConnection() throws SQLException {
         connection.close();
@@ -36,6 +40,12 @@ public class DAO {
 
     public void executeUpdate(String query) throws SQLException {
         if(connection.isClosed()) openConnection();
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+        statement.close();
+    }
+
+    public void executeUpdate(String query, Connection conn) throws SQLException {
         Statement statement = connection.createStatement();
         statement.executeUpdate(query);
         statement.close();

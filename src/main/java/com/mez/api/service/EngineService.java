@@ -47,18 +47,12 @@ public class EngineService {
         return engineRepository.count();
     }
 
-    public int save(EngineUpload engine) {
-        List<String> photosUrls = engine.getPhotos();
-        List<CharacteristicsRow> characteristics = engine.getCharacteristics();
-        try {
-            int id = engineRepository.save( convertFormUploadDTO(engine) );
-            if ( photosUrls.size() > 0 ) engineRepository.savePhotos(photosUrls, id);
-            engineRepository.saveCharacteristics(characteristics, id);
-            return id;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ResponseCodes.DATABASE_ERROR;
-        }
+    public int save(EngineUpload engineDTO) {
+        List<String> photosUrls = engineDTO.getPhotos();
+        List<CharacteristicsRow> characteristics = engineDTO.getCharacteristics();
+        Engine engine = convertFormUploadDTO(engineDTO);
+        int id = engineRepository.save(engine, characteristics, photosUrls);
+        return id;
     }
 
     public byte delete(int id) {
