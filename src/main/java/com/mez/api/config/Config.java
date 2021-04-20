@@ -9,14 +9,14 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
 
 import javax.servlet.MultipartConfigElement;
 
-@Configuration
+//@Configuration
 public class Config {
-    @Bean(name = "commonsMultipartResolver")
+//    @Bean(name = "commonsMultipartResolver")
     public MultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
 
-    @Bean
+//    @Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         factory.setMaxFileSize(DataSize.parse("10MB"));
