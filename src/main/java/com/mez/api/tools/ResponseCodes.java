@@ -1,6 +1,6 @@
 package com.mez.api.tools;
 
-public class ResponseCodes {
+public abstract class ResponseCodes {
     public static final byte SUCCESS = 1;
     public static final byte DATABASE_ERROR = -1;
     public static final byte INCORRECT_USERNAME_OR_PASSWORD = -2;
