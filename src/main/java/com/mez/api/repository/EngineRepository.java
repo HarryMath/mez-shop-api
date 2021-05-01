@@ -37,7 +37,7 @@ public class EngineRepository {
             engine.getPrice() + ", " +
             engine.getMass() + ");"
     ); // return id of saved engine
-    return dao.countQuery("SELECT max(id) FROM engines");
+    return (int) dao.countQuery("SELECT max(id) FROM engines");
   }
 
   public int save(Engine engine, List<CharacteristicsRow> rows, List<String> photos) {
@@ -126,7 +126,7 @@ public class EngineRepository {
   }
 
   public int count() {
-    return dao.countQuery("SELECT count(*) FROM engines");
+    return (int) dao.countQuery("SELECT count(*) FROM engines");
   }
 
   public List<String> getPhotos(int engineId) {

@@ -3,7 +3,6 @@ package com.mez.api.service;
 import com.mez.api.models.EngineType;
 import com.mez.api.repository.CategoriesRepository;
 import com.mez.api.tools.ResponseCodes;
-import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +26,20 @@ public class CategoriesService {
     }
 
     public byte delete(String name) {
+        int amount = categoriesRepository.countEngines(name);
+        if (amount > 0) {
+            return ResponseCodes.NOT_EMPTY;
+        }
         return categoriesRepository.delete(name);
     }
 
     public byte save(EngineType category) {
+        if (categoriesRepository.countCategories(category.getName()) > 0) {
+            return ResponseCodes.ALREADY_EXISTS;
+        }
         return categoriesRepository.save(category);
     }
 
-    @Deprecated
     public byte update(EngineType category) {
         return categoriesRepository.update(category);
     }

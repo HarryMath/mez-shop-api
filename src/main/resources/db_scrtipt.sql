@@ -65,6 +65,17 @@ CREATE TABLE photos (
     CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id)
 );
 
+DROP TABLE IF EXISTS news;
+CREATE TABLE news (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(30) NOT NULL,
+    date VARCHAR(16) NOT NULL,
+    beforePhotoText TEXT,
+    photo TEXT,
+    afterPhotoText TEXT,
+    tags varchar(100)
+);
+
 INSERT INTO manufacturers
 (name) values
 ('ОАО «Могилевлифтмаш»');

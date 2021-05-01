@@ -36,6 +36,14 @@ public class CategoriesRepository {
         return dao.executeListQuery("SELECT name, photo, shortDescription FROM engineTypes", CategoryPreview.class);
     }
 
+    public int countEngines(String name) {
+        return (int) dao.countQuery("SELECT count(*) FROM engines WHERE type = \"" + name + "\"");
+    }
+
+    public int countCategories(String name) {
+        return (int) dao.countQuery("SELECT count(*) FROM engineTypes WHERE name = \"" + name + "\"");
+    }
+
     public byte save(EngineType category) {
         try {
             dao.executeUpdate(
@@ -47,24 +55,22 @@ public class CategoriesRepository {
                     category.getFullDescription() + "\");"
             );
             return ResponseCodes.SUCCESS;
-        } catch (SQLException throwables) {
+        } catch (SQLException e) {
             return ResponseCodes.DATABASE_ERROR;
         }
     }
 
-    @Deprecated
     public byte update(EngineType category) {
         try {
-            dao.executeUpdate(
-                "UPDATE engineTypes SET " +
-                    "values ( \"" +
-                    category.getName() + "\" , \"" +
-                    category.getPhoto() + "\", \"" +
-                    category.getShortDescription() + "\", \"" +
-                    category.getFullDescription() + "\");"
+            dao.executeUpdate( "UPDATE engineTypes SET " +
+                "photo = \"" + category.getPhoto() + "\", " +
+                "shortDescription = \"" + category.getShortDescription() + "\", " +
+                "fullDescription = \"" + category.getFullDescription() + "\" " +
+                "WHERE name = \"" + category.getName() + "\""
             );
             return ResponseCodes.SUCCESS;
-        } catch (SQLException throwables) {
+        } catch (SQLException e) {
+            e.printStackTrace();
             return ResponseCodes.DATABASE_ERROR;
         }
     }

@@ -51,10 +51,15 @@ public class DAO {
         statement.close();
     }
 
-    public int countQuery(String query) {
-        ScalarHandler<Integer> handler = new ScalarHandler<>();
+    public long countQuery(String query) {
+        ScalarHandler<Long> longHandler = new ScalarHandler<>();
+        ScalarHandler<Integer> integerHandler = new ScalarHandler<>();
         try {
-            return queryRunner.query(connection, query, handler);
+            try {
+                return queryRunner.query(connection, query, longHandler);
+            } catch (ClassCastException e) {
+                return queryRunner.query(connection, query, integerHandler);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;

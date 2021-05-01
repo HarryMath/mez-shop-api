@@ -29,7 +29,7 @@ public class CategoriesController {
     }
 
     @GetMapping("/categories/{name}")
-    public Object getOne(@PathVariable String name) {
+    public EngineType getOne(@PathVariable String name) {
         return categoriesService.getOne(name);
     }
 
