@@ -54,7 +54,7 @@ public class NewsRepository {
       dao.executeUpdate( "UPDATE news SET " +
           "title = \"" + post.getTitle() + "\", " +
           "beforePhotoText = \"" + post.getBeforePhotoText() + "\", " +
-          "photo = \"" + post.getPhoto() + "\" " +
+          "photo = \"" + post.getPhoto() + "\", " +
           "afterPhotoText = \"" + post.getAfterPhotoText() + "\" " +
           "WHERE id = " + post.getId() + ""
       );
@@ -67,9 +67,7 @@ public class NewsRepository {
 
   public byte delete(int id) {
     try {
-      dao.executeUpdate("DELETE FROM photos WHERE engineId = " + id);
-      dao.executeUpdate("DELETE FROM characteristics WHERE engineId = " + id);
-      dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
+      dao.executeUpdate("DELETE FROM news WHERE id = " + id);
       return ResponseCodes.SUCCESS;
     } catch (SQLException e) {
       e.printStackTrace();
@@ -78,7 +76,7 @@ public class NewsRepository {
   }
 
   public Post getById(int id) {
-    return dao.executeQuery("SELECT * FROM posts WHERE id = " + id, Post.class);
+    return dao.executeQuery("SELECT * FROM news WHERE id = " + id, Post.class);
   }
 
 }
