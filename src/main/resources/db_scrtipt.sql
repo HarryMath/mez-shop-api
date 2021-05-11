@@ -54,7 +54,7 @@ CREATE TABLE characteristics (
     momentsRatio float,                           # Mп/Мн
     momentsMaxRatio float,                        # Mmax/Мн
     momentsMinRatio float,                        # Mmin/Мн
-    CONSTRAINT engine_character FOREIGN KEY (engineId) REFERENCES engines(id)
+    CONSTRAINT engine_character FOREIGN KEY (engineId) REFERENCES engines(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS photos;
@@ -62,7 +62,7 @@ CREATE TABLE photos (
     engineId INT NOT NULL,                        
     photo varchar(150) NOT NULL,
     PRIMARY KEY (engineId, photo),
-    CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id)
+    CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS news;
@@ -73,6 +73,7 @@ CREATE TABLE news (
     beforePhotoText TEXT,
     photo TEXT,
     afterPhotoText TEXT,
+    views int default 0,
     tags varchar(100)
 );
 

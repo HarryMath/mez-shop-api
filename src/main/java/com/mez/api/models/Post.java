@@ -10,5 +10,6 @@ public class Post {
   private String beforePhotoText;
   private String photo;
   private String afterPhotoText;
+  private int views = 0;
   private String tags;
 }

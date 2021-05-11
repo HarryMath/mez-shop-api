@@ -48,8 +48,6 @@ public class EngineRepository {
       }
       saveCharacteristics(rows, id);
       if (engine.getId() > 0) {
-        dao.executeUpdate(
-            "UPDATE photos SET engineId = " + id + " WHERE engineId = " + engine.getId());
         delete(engine.getId());
       }
       return id;
@@ -111,8 +109,6 @@ public class EngineRepository {
 
   public byte delete(int id) {
     try {
-      dao.executeUpdate("DELETE FROM photos WHERE engineId = " + id);
-      dao.executeUpdate("DELETE FROM characteristics WHERE engineId = " + id);
       dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
       return ResponseCodes.SUCCESS;
     } catch (SQLException e) {

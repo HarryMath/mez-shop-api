@@ -9,4 +9,5 @@ public class PostPreview {
   private String date;
   private String beforePhotoText;
   private String photo;
+  private int views;
 }
