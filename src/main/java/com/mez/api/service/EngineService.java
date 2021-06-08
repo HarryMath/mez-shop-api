@@ -36,6 +36,19 @@ public class EngineService {
                 convertToPreview(engines);
     }
 
+    public List<EnginePreview> find(
+        int offset, int amount, String orderBy, String query,
+        String types, String manufacturers, String phase,
+        String voltage, String frequency, String power
+    ) {
+        return convertToPreview(
+            engineRepository.find(
+                offset, amount, orderBy, query,
+                types, manufacturers, phase,
+                voltage, frequency, power)
+        );
+    }
+
     public Object getOne(int id, boolean withDetails) {
         Engine engine = engineRepository.getById(id);
         return withDetails ?
@@ -44,7 +57,14 @@ public class EngineService {
     }
 
     public int getAmount() {
-        return engineRepository.count();
+        return engineRepository.getAmount();
+    }
+
+    public int count(String query, String types, String manufacturers, String phase, String voltage, String frequency, String power) {
+        return engineRepository.count(
+            query, types, manufacturers, phase,
+            voltage, frequency, power
+        );
     }
 
     public int save(EngineUpload engineDTO) {

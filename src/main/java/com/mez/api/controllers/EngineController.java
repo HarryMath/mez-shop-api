@@ -1,7 +1,9 @@
 package com.mez.api.controllers;
 
+import com.mez.api.models.DTO.EnginePreview;
 import com.mez.api.models.DTO.EngineUpload;
 import com.mez.api.service.EngineService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,25 +18,48 @@ public class EngineController {
 
     @GetMapping("/engines")
     public Object getEngines(
-            @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
-            @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-            @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails
+        @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
+        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+        @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails
     ) {
         return engineService.get(offset, amount, withDetails);
     }
 
-    @GetMapping("/engines/count")
-    public Object countEngines(
-            @RequestParam(name = "type", required = false, defaultValue = "") String type,
-            @RequestParam(name = "manufacturer", required = false, defaultValue = "") String manufacturer,
-            @RequestParam(name = "phase", required = false, defaultValue = "0") int phase,
-            @RequestParam(name = "voltage", required = false, defaultValue = "0") int voltage,
-            @RequestParam(name = "frequencyMin", required = false, defaultValue = "0") int frequencyMin,
-            @RequestParam(name = "frequencyMax", required = false, defaultValue = "99999999") int frequencyMax,
-            @RequestParam(name = "powerMin", required = false, defaultValue = "0") int powerMin,
-            @RequestParam(name = "powerMax", required = false, defaultValue = "99999999") int powerMax
+    @GetMapping("/engines/find")
+    public List<EnginePreview> findEngines(
+        @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
+        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+        @RequestParam(name = "orderBy", required = false, defaultValue = "engines.id DESC") String orderBy,
+        // сначала послдение добавленные
+        @RequestParam(name = "types", required = false, defaultValue = "") String types,
+        @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
+        @RequestParam(name = "phase", required = false, defaultValue = "") String phase,
+        @RequestParam(name = "voltage", required = false, defaultValue = "") String voltage,
+        @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
+        @RequestParam(name = "power", required = false, defaultValue = "") String power,
+        @RequestParam(name = "query", required = false, defaultValue = "") String query
     ) {
-        return engineService.getAmount();
+        return engineService.find(
+            offset, amount, orderBy, query, // order block
+            types, manufacturers, phase, // classify block
+            voltage, frequency, power // filters block
+        );
+    }
+
+    @GetMapping("/engines/count")
+    public int countEngines(
+        @RequestParam(name = "types", required = false, defaultValue = "") String types,
+        @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
+        @RequestParam(name = "phase", required = false, defaultValue = "") String phase,
+        @RequestParam(name = "voltage", required = false, defaultValue = "") String voltage,
+        @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
+        @RequestParam(name = "power", required = false, defaultValue = "") String power,
+        @RequestParam(name = "query", required = false, defaultValue = "") String query
+    ) {
+        return engineService.count(
+            query, types, manufacturers, phase, // classify block
+            voltage, frequency, power // filters block
+        );
     }
 
     @GetMapping("/engines/{engineId}")

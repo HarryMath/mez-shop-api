@@ -5,11 +5,10 @@ import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
 import com.mez.api.tools.DAO;
 import com.mez.api.tools.ResponseCodes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.sql.SQLException;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class EngineRepository {
@@ -44,7 +43,7 @@ public class EngineRepository {
     try {
       int id = save(engine);
       if (photos.size() > 0) {
-          savePhotos(photos, id);
+        savePhotos(photos, id);
       }
       saveCharacteristics(rows, id);
       if (engine.getId() > 0) {
@@ -58,9 +57,9 @@ public class EngineRepository {
   }
 
   public void savePhotos(List<String> photos, int engineId) {
-      if (photos.size() == 0) {
-          return;
-      }
+    if (photos.size() == 0) {
+      return;
+    }
     String query = "INSERT INTO photos (engineId, photo)  values ";
     for (int i = 0; i < photos.size(); i++) {
       query += "(" + engineId + ", \"" + photos.get(i) + "\")";
@@ -107,6 +106,96 @@ public class EngineRepository {
         Engine.class);
   }
 
+  public List<Engine> find(
+      int offset, int amount, String orderBy, String query,
+      String types, String manufacturers, String phase,
+      String voltage, String frequency, String power
+  ) {
+    String querySQL = "SELECT"
+        + " engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
+        + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
+        + " WHERE engines.id > 0 ";
+    if (query.length() > 0) {
+      querySQL += "AND (type LIKE '%" + query +
+          "%' OR manufacturer LIKE '%" + query +
+          "%' OR name LIKE '%" + query + "%') ";
+    }
+    if (types.length() > 0) {
+      String[] separatedTypes = types.split(",");
+      querySQL += "AND type in (";
+      for (byte i = 0; i < separatedTypes.length; i++) {
+        querySQL += "'" + separatedTypes[i] + "'";
+        if (i != separatedTypes.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
+    }
+    if (manufacturers.length() > 0) {
+      String[] separatedManufacturers = manufacturers.split(",");
+      querySQL += "AND manufacturer in (";
+      for (byte i = 0; i < separatedManufacturers.length; i++) {
+        querySQL += "'" + separatedManufacturers[i] + "'";
+        if (i != separatedManufacturers.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
+    }
+    if (phase.length() > 0) {
+      querySQL += "AND ( "
+          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id)"
+          + " in (";
+      String[] separatedPhase = phase.split(",");
+      for (byte i = 0; i < separatedPhase.length; i++) {
+        querySQL += separatedPhase[i];
+        if (i != separatedPhase.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ")) ";
+    }
+    if (voltage.length() > 2) {
+      querySQL += "AND (";
+      String[] separated = voltage.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "voltage BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ")";
+    }
+    if (frequency.length() > 2) {
+      querySQL += "AND (";
+      String[] separated = frequency.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "frequency BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ")";
+    }
+    if (power.length() > 2) {
+      querySQL += "AND (";
+      String[] separated = power.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "power BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ") ";
+    }
+    querySQL += "GROUP BY engines.id ";
+    querySQL += "ORDER BY " + orderBy + " LIMIT " + amount + " OFFSET " + offset;
+    return dao.executeListQuery(querySQL, Engine.class);
+  }
+
   public byte delete(int id) {
     try {
       dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
@@ -121,8 +210,91 @@ public class EngineRepository {
     return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
   }
 
-  public int count() {
+  public int getAmount() {
     return (int) dao.countQuery("SELECT count(*) FROM engines");
+  }
+
+  public int count(String query, String types, String manufacturers, String phase, String voltage, String frequency, String power) {
+    String querySQL = "SELECT count(*)"
+        + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
+        + " WHERE engines.id > 0 ";
+    if (query.length() > 0) {
+      querySQL += "AND (type LIKE '%" + query +
+          "%' OR manufacturer LIKE '%" + query +
+          "%' OR name LIKE '%" + query + "%') ";
+    }
+    if (types.length() > 1) {
+      String[] separatedTypes = types.split(",");
+      querySQL += "AND type in (";
+      for (byte i = 0; i < separatedTypes.length; i++) {
+        querySQL += "'" + separatedTypes[i] + "'";
+        if (i != separatedTypes.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
+    }
+    if (manufacturers.length() > 1) {
+      String[] separatedManufacturers = manufacturers.split(",");
+      querySQL += "AND manufacturer in (";
+      for (byte i = 0; i < separatedManufacturers.length; i++) {
+        querySQL += "'" + separatedManufacturers[i] + "'";
+        if (i != separatedManufacturers.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
+    }
+    if (phase.length() > 1) {
+      querySQL += "AND ( "
+          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id)"
+          + " in (";
+      String[] separatedPhase = phase.split(",");
+      for (byte i = 0; i < separatedPhase.length; i++) {
+        querySQL += separatedPhase[i];
+        if (i != separatedPhase.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ")) ";
+    }
+    if (voltage.length() > 3) {
+      querySQL += "AND (";
+      String[] separated = voltage.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "voltage BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ")";
+    }
+    if (frequency.length() > 3) {
+      querySQL += "AND (";
+      String[] separated = frequency.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "frequency BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ")";
+    }
+    if (power.length() > 3) {
+      querySQL += "AND (";
+      String[] separated = power.split(",");
+      for (byte i = 0; i < separated.length; i++) {
+        String[] range = separated[i].split("-");
+        querySQL += "power BETWEEN " + range[0] + " AND " + range[1] + "";
+        if (i != separated.length - 1) {
+          querySQL += " OR ";
+        }
+      }
+      querySQL += ")";
+    }
+    return (int) dao.countQuery(querySQL);
   }
 
   public List<String> getPhotos(int engineId) {
@@ -139,4 +311,5 @@ public class EngineRepository {
         "SELECT * FROM characteristics WHERE engineId = " + engineId,
         CharacteristicsRow.class);
   }
+
 }
