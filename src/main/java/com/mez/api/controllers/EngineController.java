@@ -34,7 +34,7 @@ public class EngineController {
         @RequestParam(name = "types", required = false, defaultValue = "") String types,
         @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
         @RequestParam(name = "phase", required = false, defaultValue = "") String phase,
-        @RequestParam(name = "voltage", required = false, defaultValue = "") String voltage,
+        @RequestParam(name = "efficiency", required = false, defaultValue = "") String efficiency,
         @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
         @RequestParam(name = "power", required = false, defaultValue = "") String power,
         @RequestParam(name = "query", required = false, defaultValue = "") String query
@@ -42,7 +42,7 @@ public class EngineController {
         return engineService.find(
             offset, amount, orderBy, query, // order block
             types, manufacturers, phase, // classify block
-            voltage, frequency, power // filters block
+            efficiency, frequency, power // filters block
         );
     }
 
@@ -51,14 +51,14 @@ public class EngineController {
         @RequestParam(name = "types", required = false, defaultValue = "") String types,
         @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
         @RequestParam(name = "phase", required = false, defaultValue = "") String phase,
-        @RequestParam(name = "voltage", required = false, defaultValue = "") String voltage,
+        @RequestParam(name = "efficiency", required = false, defaultValue = "") String efficiency,
         @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
         @RequestParam(name = "power", required = false, defaultValue = "") String power,
         @RequestParam(name = "query", required = false, defaultValue = "") String query
     ) {
         return engineService.count(
             query, types, manufacturers, phase, // classify block
-            voltage, frequency, power // filters block
+            efficiency, frequency, power // filters block
         );
     }
 

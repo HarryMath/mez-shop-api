@@ -109,7 +109,7 @@ public class EngineRepository {
   public List<Engine> find(
       int offset, int amount, String orderBy, String query,
       String types, String manufacturers, String phase,
-      String voltage, String frequency, String power
+      String efficiency, String frequency, String power
   ) {
     String querySQL = "SELECT"
         + " engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
@@ -155,12 +155,12 @@ public class EngineRepository {
       }
       querySQL += ")) ";
     }
-    if (voltage.length() > 2) {
+    if (efficiency.length() > 2) {
       querySQL += "AND (";
-      String[] separated = voltage.split(",");
+      String[] separated = efficiency.split(",");
       for (byte i = 0; i < separated.length; i++) {
         String[] range = separated[i].split("-");
-        querySQL += "voltage BETWEEN " + range[0] + " AND " + range[1] + "";
+        querySQL += "efficiency BETWEEN " + range[0] + " AND " + range[1] + "";
         if (i != separated.length - 1) {
           querySQL += " OR ";
         }
@@ -214,8 +214,9 @@ public class EngineRepository {
     return (int) dao.countQuery("SELECT count(*) FROM engines");
   }
 
-  public int count(String query, String types, String manufacturers, String phase, String voltage, String frequency, String power) {
-    String querySQL = "SELECT count(*)"
+  public int count(String query, String types, String manufacturers, String phase, String efficiency, String frequency, String power) {
+    String querySQL = "SELECT count(*) FROM"
+        + " (SELECT engines.id"
         + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
         + " WHERE engines.id > 0 ";
     if (query.length() > 0) {
@@ -258,17 +259,17 @@ public class EngineRepository {
       }
       querySQL += ")) ";
     }
-    if (voltage.length() > 3) {
+    if (efficiency.length() > 3) {
       querySQL += "AND (";
-      String[] separated = voltage.split(",");
+      String[] separated = efficiency.split(",");
       for (byte i = 0; i < separated.length; i++) {
         String[] range = separated[i].split("-");
-        querySQL += "voltage BETWEEN " + range[0] + " AND " + range[1] + "";
+        querySQL += "efficiency BETWEEN " + range[0] + " AND " + range[1] + "";
         if (i != separated.length - 1) {
           querySQL += " OR ";
         }
       }
-      querySQL += ")";
+      querySQL += ") ";
     }
     if (frequency.length() > 3) {
       querySQL += "AND (";
@@ -280,7 +281,7 @@ public class EngineRepository {
           querySQL += " OR ";
         }
       }
-      querySQL += ")";
+      querySQL += ") ";
     }
     if (power.length() > 3) {
       querySQL += "AND (";
@@ -292,8 +293,9 @@ public class EngineRepository {
           querySQL += " OR ";
         }
       }
-      querySQL += ")";
+      querySQL += ") ";
     }
+    querySQL += "GROUP BY engines.id) as a";
     return (int) dao.countQuery(querySQL);
   }
 
