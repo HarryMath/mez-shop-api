@@ -25,7 +25,7 @@ public class CategoriesRepository {
     }
 
     public List<EngineType> getAll() {
-        return dao.executeListQuery("SELECT * FROM engineTypes", EngineType.class);
+        return dao.executeListQuery("SELECT * FROM engineTypes ORDER BY pageOrder DESC", EngineType.class);
     }
 
     public EngineType getByName(String name) {
@@ -47,9 +47,10 @@ public class CategoriesRepository {
     public byte save(EngineType category) {
         try {
             dao.executeUpdate(
-                "INSERT INTO engineTypes (name, photo, shortDescription, fullDescription) " +
+                "INSERT INTO engineTypes (name, pageOrder, photo, shortDescription, fullDescription) " +
                     "values ( \"" +
-                    category.getName() + "\" , \"" +
+                    category.getName() + "\", " +
+                    category.getPageOrder() + ", \"" +
                     category.getPhoto() + "\", \"" +
                     category.getShortDescription() + "\", \"" +
                     category.getFullDescription() + "\");"
@@ -64,6 +65,7 @@ public class CategoriesRepository {
         try {
             dao.executeUpdate( "UPDATE engineTypes SET " +
                 "photo = \"" + category.getPhoto() + "\", " +
+                "pageOrder = " + category.getPageOrder() + ", " +
                 "shortDescription = \"" + category.getShortDescription() + "\", " +
                 "fullDescription = \"" + category.getFullDescription() + "\" " +
                 "WHERE name = \"" + category.getName() + "\""

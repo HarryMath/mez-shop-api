@@ -16,6 +16,7 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS engineTypes;
 CREATE TABLE engineTypes (
 	name VARCHAR(70) NOT NULL PRIMARY KEY,
+    pageOrder int,
     photo VARCHAR(200),
     shortDescription TEXT,
     fullDescription TEXT
