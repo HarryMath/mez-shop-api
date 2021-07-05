@@ -33,7 +33,7 @@ public class CategoriesRepository {
     }
 
     public List<CategoryPreview> getPreviews() {
-        return dao.executeListQuery("SELECT name, photo, shortDescription FROM engineTypes", CategoryPreview.class);
+        return dao.executeListQuery("SELECT name, photo, shortDescription FROM engineTypes ORDER BY pageOrder DESC", CategoryPreview.class);
     }
 
     public int countEngines(String name) {

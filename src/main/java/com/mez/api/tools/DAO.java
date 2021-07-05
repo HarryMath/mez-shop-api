@@ -89,7 +89,7 @@ public class DAO {
         ResultSetHandler<List<Type>> handler = new BeanListHandler<>(type);
         try {
             return queryRunner.query(connection, query, handler);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(query);
             e.printStackTrace();
             return null;
