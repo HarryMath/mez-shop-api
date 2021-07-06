@@ -2,6 +2,7 @@ package com.mez.api.controllers;
 
 import com.mez.api.models.FeedBack;
 import com.mez.api.tools.ResponseCodes;
+import com.mez.api.tools.bots.MailBot;
 import com.mez.api.tools.bots.TelegramBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class FeedbackController {
 
   private final TelegramBot telegramBot;
+  private final MailBot mailBot;
 
   @Autowired
-  FeedbackController(TelegramBot bot) {
+  FeedbackController(TelegramBot bot, MailBot mailBot) {
     this.telegramBot = bot;
+    this.mailBot = mailBot;
   }
 
   @RequestMapping("/feedback")
@@ -25,6 +28,9 @@ public class FeedbackController {
     message += "\nконтакт: " + feedBack.getContact();
     if (feedBack.getMessage() != null && feedBack.getMessage().length() > 0) {
       message += "\nсообщение: " + feedBack.getMessage();
+    }
+    if (feedBack.getContact().contains("@")) {
+      mailBot.send(feedBack.getContact(), "Это тест", "Здравствуйте, " + feedBack.getName());
     }
     return telegramBot.sendMessage(message) ?
         ResponseCodes.SUCCESS :

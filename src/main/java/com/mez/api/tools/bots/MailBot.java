@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MailBot {
 
   private final JavaMailSender mailSender;
-  private final String FROM = "MEZ-SHOP-BOT <mezShopBot@gmail.com>";
 
   @Autowired
   public MailBot(JavaMailSender mailSender) {
@@ -22,11 +21,11 @@ public class MailBot {
   @ResponseBody
   public boolean send(String mailTo, String title, String text) {
     try {
-      InternetAddress from = new InternetAddress("mezShopBot@gmail.com", "MEZ-SHOP-BOT");
+      InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
       MimeMessage message = mailSender.createMimeMessage();
-      message.setFrom(from);
       MimeMessageHelper messageHelper = new MimeMessageHelper(message, "UTF-8");
       messageHelper.setFrom(from);
+      messageHelper.setReplyTo(from);
       messageHelper.setTo(mailTo);
       messageHelper.setSubject(title);
       messageHelper.setText(text, true);

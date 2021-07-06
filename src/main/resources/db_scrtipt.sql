@@ -29,10 +29,25 @@ GROUP BY engines.id) as a;
 SELECT engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId WHERE engines.id > 0 AND type in ('4BP', 'АИР') AND (power BETWEEN 0 AND 3 OR power BETWEEN 6 AND 9999) 
 GROUP BY engines.id ORDER BY engines.id DESC LIMIT 12 OFFSET 0;
 
+
+SELECT engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass
+FROM engines
+RIGHT JOIN characteristics ON engines.id = characteristics.engineId
+WHERE
+	engines.id > 0 AND
+	concat(
+		(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type
+        ), manufacturer, name, type
+    ) REGEXP 'Взрыво'
+GROUP BY engines.id ORDER BY engines.id DESC LIMIT 12 OFFSET 0;
+
+SELECT * FROM engineTypes;
+
 UPDATE engines set photo = null WHERE id = 262;
 select * from characteristics;
 DELETE from characteristics WHERE id = 12;
 
+SELECT concat('name', 'surname', 'chabge') REGEXP 'am';
 
 DROP TABLE IF EXISTS manufacturers;
 CREATE TABLE manufacturers (

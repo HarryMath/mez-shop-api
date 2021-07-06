@@ -1,5 +1,6 @@
 package com.mez.api.tools;
 
+import java.util.NoSuchElementException;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -88,10 +89,14 @@ public class DAO {
     public <Type> List<Type> executeListQuery(String query, Class<Type> type) {
         ResultSetHandler<List<Type>> handler = new BeanListHandler<>(type);
         try {
-            return queryRunner.query(connection, query, handler);
+            try {
+                return queryRunner.query(connection, query, handler);
+            } catch (NoSuchElementException e) {
+                return queryRunner.query(connection, query, handler);
+            }
         } catch (Exception e) {
             System.out.println(query);
-            e.printStackTrace();
+            System.out.println("error: " + e.getMessage() + "\nquery: " + query);
             return null;
         }
     }

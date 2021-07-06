@@ -115,10 +115,10 @@ public class EngineRepository {
         + " engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
         + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
         + " WHERE engines.id > 0 ";
-    if (query.length() > 0) {
-      querySQL += "AND (type LIKE '%" + query +
-          "%' OR manufacturer LIKE '%" + query +
-          "%' OR name LIKE '%" + query + "%') ";
+    if (query.length() > 2) {
+      querySQL += "AND concat("
+          + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
+          + "manufacturer, name, type) REGEXP '" + query + "' ";
     }
     if (types.length() > 0) {
       String[] separatedTypes = types.split(",");
@@ -196,33 +196,18 @@ public class EngineRepository {
     return dao.executeListQuery(querySQL, Engine.class);
   }
 
-  public byte delete(int id) {
-    try {
-      dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
-      return ResponseCodes.SUCCESS;
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return ResponseCodes.DATABASE_ERROR;
-    }
-  }
-
-  public Engine getById(int id) {
-    return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
-  }
-
-  public int getAmount() {
-    return (int) dao.countQuery("SELECT count(*) FROM engines");
-  }
-
-  public int count(String query, String types, String manufacturers, String phase, String efficiency, String frequency, String power) {
+  public int count(String query,
+      String types, String manufacturers, String phase,
+      String efficiency, String frequency, String power
+  ) {
     String querySQL = "SELECT count(*) FROM"
         + " (SELECT engines.id"
         + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
         + " WHERE engines.id > 0 ";
-    if (query.length() > 0) {
-      querySQL += "AND (type LIKE '%" + query +
-          "%' OR manufacturer LIKE '%" + query +
-          "%' OR name LIKE '%" + query + "%') ";
+    if (query.length() > 2) {
+      querySQL += "AND concat("
+          + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
+          + "manufacturer, name, type) REGEXP '" + query + "' ";
     }
     if (types.length() > 1) {
       String[] separatedTypes = types.split(",");
@@ -297,6 +282,24 @@ public class EngineRepository {
     }
     querySQL += "GROUP BY engines.id) as a";
     return (int) dao.countQuery(querySQL);
+  }
+
+  public byte delete(int id) {
+    try {
+      dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
+      return ResponseCodes.SUCCESS;
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return ResponseCodes.DATABASE_ERROR;
+    }
+  }
+
+  public Engine getById(int id) {
+    return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
+  }
+
+  public int getAmount() {
+    return (int) dao.countQuery("SELECT count(*) FROM engines");
   }
 
   public List<String> getPhotos(int engineId) {
