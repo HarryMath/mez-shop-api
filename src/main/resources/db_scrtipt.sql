@@ -22,33 +22,6 @@ CREATE TABLE engineTypes (
     fullDescription TEXT
 );
 
-SELECT count(*) FROM (SELECT engines.id FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId
-WHERE engines.id > 259
-GROUP BY engines.id) as a;
-
-SELECT engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId WHERE engines.id > 0 AND type in ('4BP', 'АИР') AND (power BETWEEN 0 AND 3 OR power BETWEEN 6 AND 9999) 
-GROUP BY engines.id ORDER BY engines.id DESC LIMIT 12 OFFSET 0;
-
-
-SELECT engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass
-FROM engines
-RIGHT JOIN characteristics ON engines.id = characteristics.engineId
-WHERE
-	engines.id > 0 AND
-	concat(
-		(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type
-        ), manufacturer, name, type
-    ) REGEXP 'Взрыво'
-GROUP BY engines.id ORDER BY engines.id DESC LIMIT 12 OFFSET 0;
-
-SELECT * FROM engineTypes;
-
-UPDATE engines set photo = null WHERE id = 262;
-select * from characteristics;
-DELETE from characteristics WHERE id = 12;
-
-SELECT concat('name', 'surname', 'chabge') REGEXP 'am';
-
 DROP TABLE IF EXISTS manufacturers;
 CREATE TABLE manufacturers (
 	name VARCHAR(30) PRIMARY KEY
@@ -56,8 +29,7 @@ CREATE TABLE manufacturers (
 
 DROP TABLE IF EXISTS engines;
 CREATE TABLE engines (
-	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) NOT NULL PRIMARY KEY,
     manufacturer VARCHAR(30) NOT NULL,
     type VARCHAR(70) NOT NULL,
     price FLOAT4 NOT NULL,
@@ -71,7 +43,7 @@ CREATE TABLE engines (
 DROP TABLE IF EXISTS characteristics;
 CREATE TABLE characteristics (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    engineId INT NOT NULL,                        
+    engineName varchar(30) NOT NULL,                        
     power FLOAT NOT NULL,                         # P (кВт)
     frequency INT NOT NULL,                       # Номинальная частота вращения (об/мин)
     efficiency INT NOT NULL,                      # КПД (%)
@@ -82,15 +54,15 @@ CREATE TABLE characteristics (
     momentsRatio float,                           # Mп/Мн
     momentsMaxRatio float,                        # Mmax/Мн
     momentsMinRatio float,                        # Mmin/Мн
-    CONSTRAINT engine_character FOREIGN KEY (engineId) REFERENCES engines(id) ON DELETE CASCADE
+    CONSTRAINT engine_character FOREIGN KEY (engineName) REFERENCES engines(name) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS photos;
 CREATE TABLE photos (
-    engineId INT NOT NULL,                        
+    engineName varchar(30) NOT NULL,                        
     photo varchar(150) NOT NULL,
-    PRIMARY KEY (engineId, photo),
-    CONSTRAINT engine_photo FOREIGN KEY (engineId) REFERENCES engines(id) ON DELETE CASCADE
+    PRIMARY KEY (engineName, photo),
+    CONSTRAINT engine_photo FOREIGN KEY (engineName) REFERENCES engines(name) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS news;
@@ -163,7 +135,7 @@ values ('4ВР63', 'ОАО «Могилевлифтмаш»', '4BP', '4732', 'ht
 
 DELETE FROM engines where (SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id) = 0;
 
-insert into photos (engineId, photo) 
+insert into photos (engine, photo) 
 values
 (2, 'photoUrl');
 SELECT photo FROM photos WHERE engineId = 2;

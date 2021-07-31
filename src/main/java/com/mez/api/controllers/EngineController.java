@@ -29,7 +29,7 @@ public class EngineController {
     public List<EnginePreview> findEngines(
         @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-        @RequestParam(name = "orderBy", required = false, defaultValue = "engines.id DESC") String orderBy,
+        @RequestParam(name = "orderBy", required = false, defaultValue = "engines.name DESC") String orderBy,
         // сначала послдение добавленные
         @RequestParam(name = "types", required = false, defaultValue = "") String types,
         @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
@@ -62,20 +62,27 @@ public class EngineController {
         );
     }
 
-    @GetMapping("/engines/{engineId}")
+    @GetMapping("/engines/{engineName}")
     public Object getOne(
-            @PathVariable int engineId,
+            @PathVariable String engineName,
             @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails) {
-        return engineService.getOne(engineId, withDetails);
+        return engineService.getOne(engineName, withDetails);
     }
 
     @PutMapping("/engines/create")
-    public int createEngine(@RequestBody EngineUpload engine) {
-        return engineService.save(engine);
+    public byte createEngine(@RequestBody EngineUpload engine) {
+        return engineService.save(engine,
+            true); // isNew
     }
 
-    @GetMapping("/engines/{id}/delete")
-    public byte deleteEngine(@PathVariable int id) {
-        return engineService.delete(id);
+    @PutMapping("/engines/update")
+    public byte updateEngine(@RequestBody EngineUpload engine) {
+        return engineService.save(engine,
+            false); // isNew
+    }
+
+    @GetMapping("/engines/{engineName}/delete")
+    public byte deleteEngine(@PathVariable String engineName) {
+        return engineService.delete(engineName);
     }
 }

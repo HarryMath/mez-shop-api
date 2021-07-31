@@ -7,7 +7,6 @@ import java.util.List;
 
 @Data
 public class EnginePreview {
-    private int id;
     private String name;
     private String manufacturer;
     private String type;

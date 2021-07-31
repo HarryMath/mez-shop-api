@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class EngineDetails {
-    private int id;
     private String name;
     private String manufacturer;
     private float price;

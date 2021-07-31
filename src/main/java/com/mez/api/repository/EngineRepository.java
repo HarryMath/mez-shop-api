@@ -25,61 +25,79 @@ public class EngineRepository {
     }
   }
 
-  public int save(Engine engine) throws SQLException {
+  private void save(Engine engine) throws SQLException {
     dao.executeUpdate(
         "INSERT INTO engines (name, type, manufacturer, photo, price, mass) " +
-            "values ( \"" +
-            engine.getName() + "\" , \"" +
-            engine.getType() + "\", \"" +
-            engine.getManufacturer() + "\", \"" +
-            engine.getPhoto() + "\", " +
-            engine.getPrice() + ", " +
-            engine.getMass() + ");"
-    ); // return id of saved engine
-    return (int) dao.countQuery("SELECT max(id) FROM engines");
+        "values ( \"" +
+        engine.getName() + "\" , \"" +
+        engine.getType() + "\", \"" +
+        engine.getManufacturer() + "\", \"" +
+        engine.getPhoto() + "\", " +
+        engine.getPrice() + ", " +
+        engine.getMass() + ");");
   }
 
-  public int save(Engine engine, List<CharacteristicsRow> rows, List<String> photos) {
+  private void update(Engine engine) throws SQLException {
+    dao.executeUpdate(
+        "UPDATE engines SET " +
+        "type = \"" + engine.getType() + "\", " +
+        "manufacturer = \"" + engine.getManufacturer() + "\", " +
+        "photo = \"" + engine.getPhoto() + "\", " +
+        "price = " + engine.getPrice() + ", " +
+        "mass = " + engine.getMass() +
+        "WHERE name = \"" + engine.getName() + "\"");
+  }
+
+  public byte save(Engine engine, List<CharacteristicsRow> rows, List<String> photos, boolean isNew) {
+    if (engineExist(engine.getName()) && isNew) {
+      return ResponseCodes.ALREADY_EXISTS;
+    }
     try {
-      int id = save(engine);
+      if (isNew) {
+        save(engine);
+      } else {
+        update(engine);
+      }
+      final boolean deleteOld = !isNew;
       if (photos.size() > 0) {
-        savePhotos(photos, id);
+        savePhotos(photos, engine.getName(), deleteOld);
       }
-      saveCharacteristics(rows, id);
-      if (engine.getId() > 0) {
-        delete(engine.getId());
+      if (rows.size() > 0) {
+        saveCharacteristics(rows, engine.getName(), deleteOld);
       }
-      return id;
+      return ResponseCodes.SUCCESS;
     } catch (SQLException e) {
-      e.printStackTrace();
+      System.out.println("engine not saved: " + e.getMessage());
       return ResponseCodes.DATABASE_ERROR;
     }
   }
 
-  public void savePhotos(List<String> photos, int engineId) {
+  public void savePhotos(List<String> photos, String engineName, boolean deleteOld) {
     if (photos.size() == 0) {
       return;
     }
-    String query = "INSERT INTO photos (engineId, photo)  values ";
+    String query = "INSERT INTO photos (engineName, photo)  values ";
     for (int i = 0; i < photos.size(); i++) {
-      query += "(" + engineId + ", \"" + photos.get(i) + "\")";
+      query += "(\"" + engineName + "\", \"" + photos.get(i) + "\")";
       query += (i == photos.size() - 1 ? ";" : ",");
     }
     try {
+      if (deleteOld) {
+        dao.executeUpdate("DELETE FROM photos WHERE engineName = \"" + engineName + "\"");
+      }
       dao.executeUpdate(query);
     } catch (SQLException e) {
-      e.printStackTrace();
+      System.out.println("photos not saved: " + e.getMessage());
     }
   }
 
-  public void saveCharacteristics(List<CharacteristicsRow> rows, int engineId) {
+  public void saveCharacteristics(List<CharacteristicsRow> rows, String engineName, boolean deleteOld) {
     String query = "INSERT INTO characteristics " +
-        "(engineId, power, frequency, efficiency, cosFi, electricityNominal220, electricityNominal380, "
-        +
-        "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio)  values ";
+        "(engineName, power, frequency, efficiency, cosFi, electricityNominal220, electricityNominal380, "
+        + "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio)  values ";
     for (int i = 0; i < rows.size(); i++) {
       CharacteristicsRow row = rows.get(i);
-      query += "(" + engineId + ", "
+      query += "(\"" + engineName + "\", "
           + row.getPower() + ", " +
           +row.getFrequency() + ", " +
           +row.getEfficiency() + ", " +
@@ -94,15 +112,18 @@ public class EngineRepository {
     }
     System.out.println(query);
     try {
+      if (deleteOld) {
+        dao.executeUpdate("DELETE FROM characteristics WHERE engineName = \"" + engineName + "\"");
+      }
       dao.executeUpdate(query);
     } catch (SQLException e) {
-      e.printStackTrace();
+      System.out.println("characteristics not saved: " + e.getMessage());
     }
   }
 
   public List<Engine> get(int limit, int offset) {
     return dao.executeListQuery(
-        "SELECT * FROM engines ORDER BY id LIMIT " + limit + " OFFSET " + offset,
+        "SELECT * FROM engines ORDER BY name LIMIT " + limit + " OFFSET " + offset,
         Engine.class);
   }
 
@@ -112,9 +133,9 @@ public class EngineRepository {
       String efficiency, String frequency, String power
   ) {
     String querySQL = "SELECT"
-        + " engines.id, engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
-        + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
-        + " WHERE engines.id > 0 ";
+        + " engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
+        + " FROM engines RIGHT JOIN characteristics ON engines.name = characteristics.engineName"
+        + " WHERE length(engines.name) > 0 ";
     if (query.length() > 2) {
       querySQL += "AND concat("
           + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
@@ -144,7 +165,7 @@ public class EngineRepository {
     }
     if (phase.length() > 0) {
       querySQL += "AND ( "
-          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id)"
+          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineName = engines.name)"
           + " in (";
       String[] separatedPhase = phase.split(",");
       for (byte i = 0; i < separatedPhase.length; i++) {
@@ -191,7 +212,7 @@ public class EngineRepository {
       }
       querySQL += ") ";
     }
-    querySQL += "GROUP BY engines.id ";
+    querySQL += "GROUP BY engines.name ";
     querySQL += "ORDER BY " + orderBy + " LIMIT " + amount + " OFFSET " + offset;
     return dao.executeListQuery(querySQL, Engine.class);
   }
@@ -201,9 +222,9 @@ public class EngineRepository {
       String efficiency, String frequency, String power
   ) {
     String querySQL = "SELECT count(*) FROM"
-        + " (SELECT engines.id"
-        + " FROM engines RIGHT JOIN characteristics ON engines.id = characteristics.engineId"
-        + " WHERE engines.id > 0 ";
+        + " (SELECT engines.name"
+        + " FROM engines RIGHT JOIN characteristics ON engines.name = characteristics.engineName"
+        + " WHERE  length(engines.name) > 0 ";
     if (query.length() > 2) {
       querySQL += "AND concat("
           + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
@@ -233,7 +254,7 @@ public class EngineRepository {
     }
     if (phase.length() > 1) {
       querySQL += "AND ( "
-          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id)"
+          + "(SELECT count(*) FROM characteristics WHERE characteristics.engineName = engines.name)"
           + " in (";
       String[] separatedPhase = phase.split(",");
       for (byte i = 0; i < separatedPhase.length; i++) {
@@ -280,13 +301,13 @@ public class EngineRepository {
       }
       querySQL += ") ";
     }
-    querySQL += "GROUP BY engines.id) as a";
+    querySQL += "GROUP BY engines.name) as a";
     return (int) dao.countQuery(querySQL);
   }
 
-  public byte delete(int id) {
+  public byte delete(String name) {
     try {
-      dao.executeUpdate("DELETE FROM engines WHERE id = " + id);
+      dao.executeUpdate("DELETE FROM engines WHERE name = \"" + name + "\"");
       return ResponseCodes.SUCCESS;
     } catch (SQLException e) {
       e.printStackTrace();
@@ -294,26 +315,35 @@ public class EngineRepository {
     }
   }
 
-  public Engine getById(int id) {
-    return dao.executeQuery("SELECT * FROM engines WHERE id = " + id, Engine.class);
+  public Engine getById(String name) {
+    return dao.executeQuery(
+        "SELECT * FROM engines WHERE name = \"" + name + "\"",
+        Engine.class);
+  }
+
+  public boolean engineExist(String name) {
+    return dao.countQuery(
+        "SELECT count(*) FROM engines WHERE name = \"" + name + "\""
+    ) > 0;
   }
 
   public int getAmount() {
     return (int) dao.countQuery("SELECT count(*) FROM engines");
   }
 
-  public List<String> getPhotos(int engineId) {
-    return dao.columnQuery("SELECT photo FROM photos WHERE engineId = " + engineId);
+  public List<String> getPhotos(String engineName) {
+    return dao.columnQuery("SELECT photo FROM photos WHERE engineName = \"" + engineName + "\"");
   }
 
   public EngineType getType(String typeId) {
-    return dao.executeQuery("SELECT * FROM engineTypes WHERE name = \"" + typeId + "\"",
+    return dao.executeQuery(
+        "SELECT * FROM engineTypes WHERE name = \"" + typeId + "\"",
         EngineType.class);
   }
 
-  public List<CharacteristicsRow> getCharacteristics(int engineId) {
+  public List<CharacteristicsRow> getCharacteristics(String engineName) {
     return dao.executeListQuery(
-        "SELECT * FROM characteristics WHERE engineId = " + engineId,
+        "SELECT * FROM characteristics WHERE engineName = \"" + engineName + "\"",
         CharacteristicsRow.class);
   }
 
