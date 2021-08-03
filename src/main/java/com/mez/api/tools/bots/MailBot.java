@@ -3,10 +3,10 @@ package com.mez.api.tools.bots;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Component
 public class MailBot {
@@ -18,7 +18,6 @@ public class MailBot {
     this.mailSender = mailSender;
   }
 
-  @ResponseBody
   public boolean send(String mailTo, String title, String text) {
     try {
       InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
@@ -29,6 +28,25 @@ public class MailBot {
       messageHelper.setTo(mailTo);
       messageHelper.setSubject(title);
       messageHelper.setText(text, true);
+      mailSender.send(message);
+      return true;
+    } catch (Exception e) {
+      System.out.println("Message wasn't send: " + e.getMessage());
+      return false;
+    }
+  }
+
+  public boolean send(String mailTo, String title, String text, byte[] file) {
+    try {
+      InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
+      MimeMessage message = mailSender.createMimeMessage();
+      MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
+      messageHelper.setFrom(from);
+      messageHelper.setReplyTo(from);
+      messageHelper.setTo(mailTo);
+      messageHelper.setSubject(title);
+      messageHelper.setText(text, true);
+      messageHelper.addAttachment("счёт.xlsx", new ByteArrayResource(file));
       mailSender.send(message);
       return true;
     } catch (Exception e) {
