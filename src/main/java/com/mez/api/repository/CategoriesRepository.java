@@ -25,7 +25,7 @@ public class CategoriesRepository {
     }
 
     public List<EngineType> getAll() {
-        return dao.executeListQuery("SELECT * FROM engineTypes ORDER BY pageOrder DESC", EngineType.class);
+        return dao.executeListQuery("SELECT * FROM engineTypes ORDER BY pageOrder ASC", EngineType.class);
     }
 
     public EngineType getByName(String name) {

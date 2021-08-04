@@ -36,7 +36,7 @@ public class MailBot {
     }
   }
 
-  public boolean send(String mailTo, String title, String text, byte[] file) {
+  public boolean send(String mailTo, String title, String text, byte[] file, String fileName) {
     try {
       InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
       MimeMessage message = mailSender.createMimeMessage();
@@ -46,7 +46,7 @@ public class MailBot {
       messageHelper.setTo(mailTo);
       messageHelper.setSubject(title);
       messageHelper.setText(text, true);
-      messageHelper.addAttachment("счёт.xlsx", new ByteArrayResource(file));
+      messageHelper.addAttachment(fileName, new ByteArrayResource(file));
       mailSender.send(message);
       return true;
     } catch (Exception e) {

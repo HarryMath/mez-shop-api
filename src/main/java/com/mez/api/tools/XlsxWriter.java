@@ -1,15 +1,38 @@
 package com.mez.api.tools;
 
+import com.cloudmersive.client.ConvertDocumentApi;
+import com.cloudmersive.client.invoker.ApiClient;
+import com.cloudmersive.client.invoker.ApiException;
+import com.cloudmersive.client.invoker.Configuration;
+import com.cloudmersive.client.invoker.auth.ApiKeyAuth;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.qrcode.ByteArray;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class XlsxWriter {
+
+  @Value("${cloudmersive.key}")
+  private String apiKey;
 
   public Row copyRow(Workbook workbook, Sheet sheet, Row sourceRow, int destinationRowOrder) {
     Row destinationRow = sheet.getRow(destinationRowOrder);
@@ -79,5 +102,53 @@ public class XlsxWriter {
       } catch (Exception ignore) {}
     }
     return destinationRow;
+  }
+  
+  public byte[] exportToPDF(Sheet sheet) throws DocumentException {
+    Iterator<Row> rowIterator = sheet.iterator();
+    Document document = new Document();
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    PdfWriter.getInstance(document, stream);
+    document.open();
+    PdfPTable pdfPTable = new PdfPTable(2);
+    PdfPCell tableCell;
+    while(rowIterator.hasNext()) {
+      Row row = rowIterator.next();
+      Iterator<Cell> cellIterator = row.cellIterator();
+      while(cellIterator.hasNext()) {
+        Cell cell = cellIterator.next(); //Fetch CELL
+        switch(cell.getCellType()) { //Identify CELL type
+          case Cell.CELL_TYPE_STRING:
+            //Push the data from Excel to PDF Cell
+            tableCell = new PdfPCell(new Phrase(cell.getStringCellValue()));
+            //feel free to move the code below to suit to your needs
+            pdfPTable.addCell(tableCell);
+            break;
+          case Cell.CELL_TYPE_NUMERIC:
+            tableCell = new PdfPCell(new Phrase((float) cell.getNumericCellValue()));
+            pdfPTable.addCell(tableCell);
+            break;
+        }
+      }
+
+    }
+    document.add(pdfPTable);
+    document.close();
+    return stream.toByteArray();
+  }
+
+  public byte[] convertToPDF(Workbook workbook) throws ApiException, IOException {
+    OutputStream stream = new FileOutputStream("saved.xlsx");
+    workbook.write(stream);
+    workbook.close();
+    File file = new File("saved.xlsx");
+
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    ApiKeyAuth Apikey = (ApiKeyAuth) defaultClient.getAuthentication("Apikey");
+    Apikey.setApiKey(apiKey);
+    ConvertDocumentApi apiInstance = new ConvertDocumentApi();
+    byte[] result = apiInstance.convertDocumentXlsxToPdf(file);
+    file.delete();
+    return result;
   }
 }

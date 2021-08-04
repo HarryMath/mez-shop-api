@@ -1,11 +1,13 @@
 package com.mez.api.repository;
 
 import com.mez.api.models.CharacteristicsRow;
+import com.mez.api.models.DTO.CartItem;
 import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
 import com.mez.api.tools.DAO;
 import com.mez.api.tools.ResponseCodes;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -125,6 +127,26 @@ public class EngineRepository {
     return dao.executeListQuery(
         "SELECT * FROM engines ORDER BY name LIMIT " + limit + " OFFSET " + offset,
         Engine.class);
+  }
+
+  public List<Engine> getEngines(List<CartItem> items) {
+    String names = "(";
+    for (CartItem i : items) {
+      names += "\"" + i.getItemId() + "\", ";
+    }
+    names = names.substring(0, names.length() - 2);
+    names += ")";
+    List<Engine> engines = dao.executeListQuery("SELECT * FROM engines WHERE name IN " + names, Engine.class);
+    List<Engine> result = new ArrayList<>();
+    for (CartItem i : items) {
+      for (Engine e : engines) {
+        if (i.getItemId().equals(e.getName())) {
+          result.add(e);
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   public List<Engine> find(
@@ -346,5 +368,4 @@ public class EngineRepository {
         "SELECT * FROM characteristics WHERE engineName = \"" + engineName + "\"",
         CharacteristicsRow.class);
   }
-
 }
