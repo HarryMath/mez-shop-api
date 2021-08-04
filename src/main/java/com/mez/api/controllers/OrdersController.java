@@ -16,7 +16,7 @@ public class OrdersController {
   }
 
   @RequestMapping("/orders/create")
-  public byte feedBack(@RequestBody Order order) {
+  public String feedBack(@RequestBody Order order) {
     return ordersService.sendCheque(order);
   }
 }

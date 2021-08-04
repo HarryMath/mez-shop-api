@@ -34,12 +34,12 @@ public class OrderService {
     this.engineRepository = engineRepository;
   }
 
-  public byte sendCheque(Order order) {
+  public String sendCheque(Order order) {
     try {
       List<CartItem> items = order.getItems();
       List<Engine> engines = engineRepository.getEngines(items);
       if (engines.size() != items.size()) {
-        return ResponseCodes.DATABASE_ERROR;
+        return "DATABASE_ERROR";
       }
       final int amount = items.size();
       String path = amount > 3 ? "classpath:cheque.xlsx" : "classpath:cheque" + amount + ".xlsx";
@@ -105,12 +105,12 @@ public class OrderService {
 //      byte[] document = stream.toByteArray();
       return mailBot
           .send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.pdf") ?
-          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
+          "SUCCESS" : "SEND_ERROR";
 //      return mailBot.send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.xlsx") ?
 //          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
     } catch (Exception e) {
       e.printStackTrace();
-      return ResponseCodes.UNKNOWN_ERROR;
+      return "ERROR: " + e.getMessage();
     }
   }
 }
