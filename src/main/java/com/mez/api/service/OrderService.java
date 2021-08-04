@@ -8,6 +8,7 @@ import com.mez.api.tools.ResponseCodes;
 import com.mez.api.tools.XlsxWriter;
 import com.mez.api.tools.bots.MailBot;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -42,8 +44,10 @@ public class OrderService {
         return "DATABASE_ERROR";
       }
       final int amount = items.size();
-      String path = amount > 3 ? "classpath:cheque.xlsx" : "classpath:cheque" + amount + ".xlsx";
-      FileInputStream file = new FileInputStream(ResourceUtils.getFile(path));
+//      String path = amount > 3 ? "classpath:cheque.xlsx" : "classpath:cheque" + amount + ".xlsx";
+//      InputStream file = new FileInputStream(ResourceUtils.getFile(path));
+      String path = amount > 3 ? "cheque.xlsx" : "cheque" + amount + ".xlsx";
+      InputStream file = new ClassPathResource(path).getInputStream();
       Workbook workbook = new XSSFWorkbook(file);
       Sheet sheet = workbook.getSheetAt(0);
       Row sourceRow = sheet.getRow(27);
@@ -109,7 +113,7 @@ public class OrderService {
 //      return mailBot.send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.xlsx") ?
 //          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println("ERROR" + e.getMessage());
       return "ERROR: " + e.getMessage();
     }
   }
