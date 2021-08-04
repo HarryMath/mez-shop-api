@@ -108,8 +108,7 @@ public class OrderService {
 //      stream.close();
 //      byte[] document = stream.toByteArray();
       return mailBot
-          .send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.pdf") ?
-          "SUCCESS" : "SEND_ERROR";
+          .send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.pdf");
 //      return mailBot.send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.xlsx") ?
 //          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
     } catch (Exception e) {
