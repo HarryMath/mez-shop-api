@@ -1,5 +1,6 @@
 package com.mez.api.tools.bots;
 
+import com.mez.api.tools.ResponseCodes;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class MailBot {
     }
   }
 
-  public String send(String mailTo, String title, String text, byte[] file, String fileName) {
+  public boolean send(String mailTo, String title, String text, byte[] file, String fileName) {
     try {
       InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
       MimeMessage message = mailSender.createMimeMessage();
@@ -48,9 +49,10 @@ public class MailBot {
       messageHelper.setText(text, true);
       messageHelper.addAttachment(fileName, new ByteArrayResource(file));
       mailSender.send(message);
-      return "SUCCESS";
+      return true;
     } catch (Exception e) {
-      return "Message wasn't send: " + e.getMessage();
+      System.out.println("Message wasn't send: " + e.getMessage());
+      return false;
     }
   }
 }

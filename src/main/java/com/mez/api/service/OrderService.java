@@ -36,16 +36,14 @@ public class OrderService {
     this.engineRepository = engineRepository;
   }
 
-  public String sendCheque(Order order) {
+  public byte sendCheque(Order order) {
     try {
       List<CartItem> items = order.getItems();
       List<Engine> engines = engineRepository.getEngines(items);
       if (engines.size() != items.size()) {
-        return "DATABASE_ERROR";
+        return ResponseCodes.DATABASE_ERROR;
       }
       final int amount = items.size();
-//      String path = amount > 3 ? "classpath:cheque.xlsx" : "classpath:cheque" + amount + ".xlsx";
-//      InputStream file = new FileInputStream(ResourceUtils.getFile(path));
       String path = amount > 3 ? "cheque.xlsx" : "cheque" + amount + ".xlsx";
       InputStream file = new ClassPathResource(path).getInputStream();
       Workbook workbook = new XSSFWorkbook(file);
@@ -65,18 +63,13 @@ public class OrderService {
           row.getCell(27).setCellValue("шт");
           row.getCell(29).setCellValue(price);
           row.getCell(33).setCellValue(price * amount);
-        } catch (NullPointerException e) {
-          System.out
-              .println("error in row: " + 26 + i + "; engine number " + i + "\n" + e.getMessage());
-        }
+        } catch (NullPointerException ignore) { }
       }
       try {
         sheet.getRow(26 + amount).getCell(33).setCellValue(totalPrice);
         sheet.getRow(27 + amount).getCell(33).setCellValue(0.0);
         sheet.getRow(28 + amount).getCell(33).setCellValue(totalPrice);
-      } catch (NullPointerException e) {
-        e.printStackTrace();
-      }
+      } catch (NullPointerException ignore) { }
       try {
         CellStyle style = sheet.getRow(18).getCell(8).getCellStyle();
         sheet.getRow(20).getCell(8).setCellValue(order.getName());
@@ -102,18 +95,11 @@ public class OrderService {
         }
       }
       byte[] document = xlsxWriter.convertToPDF(workbook);
-//      ByteArrayOutputStream  stream = new ByteArrayOutputStream();
-//      workbook.write(stream);
-//      workbook.close();
-//      stream.close();
-//      byte[] document = stream.toByteArray();
-      return mailBot
-          .send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.pdf");
-//      return mailBot.send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.xlsx") ?
-//          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
+      return mailBot.send(order.getMail(), "Заказ в магазине mez", "Здравствуйте...", document, "чек.pdf") ?
+          ResponseCodes.SUCCESS : ResponseCodes.UNKNOWN_ERROR;
     } catch (Exception e) {
       System.out.println("ERROR" + e.getMessage());
-      return "ERROR: " + e.getMessage();
+      return ResponseCodes.UNKNOWN_ERROR;
     }
   }
 }
