@@ -45,12 +45,6 @@ public class DAO {
         statement.close();
     }
 
-    public void executeUpdate(String query, Connection conn) throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.executeUpdate(query);
-        statement.close();
-    }
-
     public long countQuery(String query) {
         ScalarHandler<Long> longHandler = new ScalarHandler<>();
         ScalarHandler<Integer> integerHandler = new ScalarHandler<>();

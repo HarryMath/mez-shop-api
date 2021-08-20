@@ -13,41 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EngineRepository {
-
-  DAO dao;
+public class EngineRepository extends Repository<Engine> {
 
   @Autowired
   EngineRepository(DAO dao) {
-    this.dao = dao;
-    try {
-      this.dao.openConnection();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void save(Engine engine) throws SQLException {
-    dao.executeUpdate(
-        "INSERT INTO engines (name, type, manufacturer, photo, price, mass) " +
-        "values ( \"" +
-        engine.getName() + "\" , \"" +
-        engine.getType() + "\", \"" +
-        engine.getManufacturer() + "\", \"" +
-        engine.getPhoto() + "\", " +
-        engine.getPrice() + ", " +
-        engine.getMass() + ");");
-  }
-
-  private void update(Engine engine) throws SQLException {
-    dao.executeUpdate(
-        "UPDATE engines SET " +
-        "type = \"" + engine.getType() + "\", " +
-        "manufacturer = \"" + engine.getManufacturer() + "\", " +
-        "photo = \"" + engine.getPhoto() + "\", " +
-        "price = " + engine.getPrice() + ", " +
-        "mass = " + engine.getMass() +
-        "WHERE name = \"" + engine.getName() + "\"");
+    super(dao, "engines");
   }
 
   public byte save(Engine engine, List<CharacteristicsRow> rows, List<String> photos, boolean isNew) {
@@ -155,7 +125,8 @@ public class EngineRepository {
       String efficiency, String frequency, String power
   ) {
     String querySQL = "SELECT"
-        + " engines.name, engines.manufacturer, engines.type, engines.price, engines.photo, engines.mass"
+        + " engines.name, engines.manufacturer, engines.type,"
+        + " engines.priceLapy, engines.priceCombi, engines.priceFlanets, engines.photo, engines.mass"
         + " FROM engines RIGHT JOIN characteristics ON engines.name = characteristics.engineName"
         + " WHERE length(engines.name) > 0 ";
     if (query.length() > 2) {
@@ -325,22 +296,6 @@ public class EngineRepository {
     }
     querySQL += "GROUP BY engines.name) as a";
     return (int) dao.countQuery(querySQL);
-  }
-
-  public byte delete(String name) {
-    try {
-      dao.executeUpdate("DELETE FROM engines WHERE name = \"" + name + "\"");
-      return ResponseCodes.SUCCESS;
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return ResponseCodes.DATABASE_ERROR;
-    }
-  }
-
-  public Engine getById(String name) {
-    return dao.executeQuery(
-        "SELECT * FROM engines WHERE name = \"" + name + "\"",
-        Engine.class);
   }
 
   public boolean engineExist(String name) {

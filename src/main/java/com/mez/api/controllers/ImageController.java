@@ -22,7 +22,6 @@ public class ImageController {
 
     @PutMapping("/images/save")
     public String saveImage(@RequestParam(name = "photo") MultipartFile photo) {
-        System.out.println("image saved");
         return "{\"url\": \"" + imageRepository.saveImage(photo) + "\"}";
     }
 

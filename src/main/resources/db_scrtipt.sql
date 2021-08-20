@@ -32,7 +32,9 @@ CREATE TABLE engines (
     name VARCHAR(30) NOT NULL PRIMARY KEY,
     manufacturer VARCHAR(30) NOT NULL,
     type VARCHAR(70) NOT NULL,
-    price FLOAT4 NOT NULL,
+    priceLapy FLOAT4 NOT NULL,
+    priceCombi FLOAT4 NOT NULL,
+    priceFlanets FLOAT4 NOT NULL,
     photo TEXT,
     mass float,
 
@@ -76,68 +78,3 @@ CREATE TABLE news (
     views int default 0,
     tags varchar(100)
 );
-
-INSERT INTO manufacturers
-(name) values
-('ОАО «Могилевлифтмаш»');
-
-INSERT INTO engineTypes
-(name, shortDescription, fullDescription)
-values
-('Стандартные двигатели', 'короткое описание категории', ''),
-('Двигатели для нефтегазовой промышленности', 'короткое описание категории', ''),
-('Двигатели для объектов использования ядерного топлива', 'короткое описание категории', ''),
-('Многоскоростные двигатели', 'короткое описание категории', ''),
-('Двигатели с электромагнитным тормозом', 'короткое описание категории', ''),
-('Двигатели с повышенным скольжениемм', 'короткое описание категории', ''),
-('Тяговые двигатели', 'короткое описание категории', ''),
-('Узкоспециализированные двигатели', 'короткое описание категории', ''),
-('Встраиваемые двигатели', 'короткое описание категории', ''),
-('Бытовые однофазные двигатели типа ДАК', 'короткое описание категории', ''),
-('Товары народного потребления', 'короткое описание категории', ''),
-('Электроакустические приборы', 'короткое описание категории', '');
-UPDATE engineTypes 
-SET fullDescription = 'тут будет плоное описание';
-
-select type, count(*) from engines group by type;
-select * from engines;
-
-insert into engines
-(name, type, manufacturer, photo, price, mass)
-values
-(
-	'АИР63А4/2',
-	'Многоскоростные двигатели',
-	'ОАО «Могилевлифтмаш»',
-	'https://www.mez.by/upload/iblock/ad4/ad4f5e8bc3bebbe7396f5fe6301029ae.jpg',
-	6599, 3.4
-);
-insert into engines
-(name, type, manufacturer, photo, price, mass)
-values
- (
-	'4BP90L',
-	'Встраиваемые двигатели',
-	'ОАО «Могилевлифтмаш»',
-	'https://www.emotorsdirect.ca/site/ItemImagesResized/Baldor%20503_motors.jpg?resizeid=2&resizeh=250&resizew=310',
-	4234, 2.9
-);
-
-SELECT * FROM engines;
-SELECT * FROM engines ORDER BY id LIMIT 100 OFFSET 0;
-
-SELECT * FROM engines WHERE (mass between 8 AND 9) or (mass between 9 and 13) AND price;
-
-insert into engines (name, manufacturer, type, price, photo, mass)
-values ('4ВР63', 'ОАО «Могилевлифтмаш»', '4BP', '4732', 'http://res.cloudinary.com/mikitinski/image/upload/v1621193155/skbxeeg26ventxhhbtw7.png', '9.9'),
-('4ВР63', 'ОАО «Могилевлифтмаш»', '4BP', '4732', 'http://res.cloudinary.com/mikitinski/image/upload/v1621193155/skbxeeg26ventxhhbtw7.png', '9.9'),
-('4ВР63', 'ОАО «Могилевлифтмаш»', '4BP', '4732', 'http://res.cloudinary.com/mikitinski/image/upload/v1621193155/skbxeeg26ventxhhbtw7.png', '9.9');
-
-DELETE FROM engines where (SELECT count(*) FROM characteristics WHERE characteristics.engineId = engines.id) = 0;
-
-insert into photos (engine, photo) 
-values
-(2, 'photoUrl');
-SELECT photo FROM photos WHERE engineId = 2;
-SELECT * from characteristics;
-SELECT max(id) from engines where name = 's/2';

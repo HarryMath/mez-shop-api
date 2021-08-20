@@ -8,7 +8,6 @@ import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
 import com.mez.api.repository.EngineRepository;
 
-import com.mez.api.tools.ReflectDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,6 +82,10 @@ public class EngineService {
 
     public EnginePreview convertToPreview(Engine engine) {
         EnginePreview enginePreview = modelMapper.map(engine, EnginePreview.class);
+        enginePreview.setMinPrice(
+            Math.min(engine.getPriceLapy(),
+            Math.min(engine.getPriceFlanets(), engine.getPriceCombi()))
+        );
         enginePreview.setCharacteristics(
                 engineRepository.getCharacteristics(engine.getName())
         );

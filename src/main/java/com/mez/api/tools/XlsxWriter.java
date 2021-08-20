@@ -103,39 +103,6 @@ public class XlsxWriter {
     }
     return destinationRow;
   }
-  
-  public byte[] exportToPDF(Sheet sheet) throws DocumentException {
-    Iterator<Row> rowIterator = sheet.iterator();
-    Document document = new Document();
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    PdfWriter.getInstance(document, stream);
-    document.open();
-    PdfPTable pdfPTable = new PdfPTable(2);
-    PdfPCell tableCell;
-    while(rowIterator.hasNext()) {
-      Row row = rowIterator.next();
-      Iterator<Cell> cellIterator = row.cellIterator();
-      while(cellIterator.hasNext()) {
-        Cell cell = cellIterator.next(); //Fetch CELL
-        switch(cell.getCellType()) { //Identify CELL type
-          case Cell.CELL_TYPE_STRING:
-            //Push the data from Excel to PDF Cell
-            tableCell = new PdfPCell(new Phrase(cell.getStringCellValue()));
-            //feel free to move the code below to suit to your needs
-            pdfPTable.addCell(tableCell);
-            break;
-          case Cell.CELL_TYPE_NUMERIC:
-            tableCell = new PdfPCell(new Phrase((float) cell.getNumericCellValue()));
-            pdfPTable.addCell(tableCell);
-            break;
-        }
-      }
-
-    }
-    document.add(pdfPTable);
-    document.close();
-    return stream.toByteArray();
-  }
 
   public byte[] convertToPDF(Workbook workbook) throws ApiException, IOException {
     OutputStream stream = new FileOutputStream("saved.xlsx");

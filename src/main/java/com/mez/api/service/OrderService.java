@@ -53,7 +53,7 @@ public class OrderService {
       float totalPrice = 0;
       for (int i = 0; i < amount; i++) {
         try {
-          float price = engines.get(i).getPrice();
+          float price = engines.get(i).getPriceLapy();
           int quantity = items.get(i).getAmount();
           totalPrice += price * quantity;
           Row row = i < 4 ? sheet.getRow(25 + i) :

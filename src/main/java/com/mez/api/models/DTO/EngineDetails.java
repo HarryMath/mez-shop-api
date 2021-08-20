@@ -10,7 +10,9 @@ import java.util.List;
 public class EngineDetails {
     private String name;
     private String manufacturer;
-    private float price;
+    private float priceLapy;
+    private float priceCombi;
+    private float priceFlanets;
     private float mass;
     private String photo;
 

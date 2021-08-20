@@ -1,13 +1,18 @@
 package com.mez.api.models;
 
+import com.mez.api.tools.annotations.PrimaryKey;
 import lombok.Data;
 
 @Data
 public class Engine {
-    private String name;
-    private String manufacturer;
-    private String type;
-    private float price;
-    private float mass;
-    private String photo;
+
+  @PrimaryKey
+  private String name;
+  private String manufacturer;
+  private String type;
+  private float priceLapy;
+  private float priceCombi;
+  private float priceFlanets;
+  private float mass;
+  private String photo;
 }

@@ -30,7 +30,6 @@ public class EngineController {
         @RequestParam(name = "amount", required = false, defaultValue = "99999") int amount,
         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
         @RequestParam(name = "orderBy", required = false, defaultValue = "engines.name DESC") String orderBy,
-        // сначала послдение добавленные
         @RequestParam(name = "types", required = false, defaultValue = "") String types,
         @RequestParam(name = "manufacturers", required = false, defaultValue = "") String manufacturers,
         @RequestParam(name = "phase", required = false, defaultValue = "") String phase,
