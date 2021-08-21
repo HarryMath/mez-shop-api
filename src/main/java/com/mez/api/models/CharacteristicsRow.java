@@ -13,12 +13,19 @@ public class CharacteristicsRow {
   private String engineName;
   private float power;                    // P (кВт)
   private int frequency;                  // Номинальная частота вращения (об/мин)
-  private int efficiency;                 // КПД (%)
+  private float efficiency;               // КПД (%)
   private float cosFi;                    // cos fi
+  private float electricityNominal115;    // ток номинальный (А) для напряжения 115В
   private float electricityNominal220;    // ток номинальный (А) для напряжения 220В
   private float electricityNominal380;    // ток номинальный (А) для напряжения 380В
   private float electricityRatio;         // Iп/Iн
   private float momentsRatio;             // Mп/Мн
   private float momentsMaxRatio;          // Mmax/Мн
   private float momentsMinRatio;          // Mmin/Мн
+  private float voltage115;
+  private float voltage220_230;
+  private float capacity115;
+  private float capacity220;
+  private float capacity230;
+  private float criticalSlipping;
 }

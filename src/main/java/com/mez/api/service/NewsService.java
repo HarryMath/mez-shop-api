@@ -25,7 +25,7 @@ public class NewsService {
   }
 
   public Post getOne(int id) {
-    return newsRepository.getById(id);
+    return newsRepository.getById(String.valueOf(id));
   }
 
   public int save(Post post) {
@@ -39,10 +39,15 @@ public class NewsService {
   }
 
   public byte delete(int id) {
-    return newsRepository.delete(id);
+    return newsRepository.delete(String.valueOf(id));
   }
 
   public byte update(Post post) {
-    return newsRepository.update(post);
+    try {
+      newsRepository.update(post);
+      return ResponseCodes.SUCCESS;
+    } catch (SQLException e) {
+      return ResponseCodes.DATABASE_ERROR;
+    }
   }
 }

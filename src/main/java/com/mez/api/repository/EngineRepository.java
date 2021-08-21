@@ -4,6 +4,7 @@ import com.mez.api.models.CharacteristicsRow;
 import com.mez.api.models.DTO.CartItem;
 import com.mez.api.models.Engine;
 import com.mez.api.models.EngineType;
+import com.mez.api.models.Photo;
 import com.mez.api.tools.DAO;
 import com.mez.api.tools.ResponseCodes;
 import java.sql.SQLException;
@@ -20,8 +21,26 @@ public class EngineRepository extends Repository<Engine> {
     super(dao, "engines");
   }
 
-  public byte save(Engine engine, List<CharacteristicsRow> rows, List<String> photos, boolean isNew) {
-    if (engineExist(engine.getName()) && isNew) {
+  public byte save(Engine engine, List<CharacteristicsRow> rows) {
+    try {
+      if (engineExist(engine.getName())) {
+        update(engine, "photo");
+        saveCharacteristics(rows, engine.getName(), true);
+      } else {
+        save(engine);
+        saveCharacteristics(rows, engine.getName(), false);
+      }
+      return ResponseCodes.SUCCESS;
+    } catch (SQLException e) {
+      System.out.println("Unavailable to save engine " + engine.getName()
+          + " (type is " + engine.getType()  +") : \n" + e.getMessage());
+      return ResponseCodes.DATABASE_ERROR;
+    }
+  }
+
+  public byte save(Engine engine, List<CharacteristicsRow> rows, List<String> photos,
+      boolean isNew) {
+    if (isNew && engineExist(engine.getName())) {
       return ResponseCodes.ALREADY_EXISTS;
     }
     try {
@@ -63,26 +82,36 @@ public class EngineRepository extends Repository<Engine> {
     }
   }
 
-  public void saveCharacteristics(List<CharacteristicsRow> rows, String engineName, boolean deleteOld) {
+  public void saveCharacteristics(List<CharacteristicsRow> rows, String engineName,
+      boolean deleteOld) {
     String query = "INSERT INTO characteristics " +
-        "(engineName, power, frequency, efficiency, cosFi, electricityNominal220, electricityNominal380, "
-        + "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio)  values ";
+        "(engineName, power, frequency, efficiency, cosFi, "
+        + "electricityNominal115, electricityNominal220, electricityNominal380, "
+        + "electricityRatio, momentsRatio, momentsMaxRatio, momentsMinRatio, "
+        + "voltage115, voltage220_230, capacity115, capacity220, capacity230, criticalSlipping) "
+        + "values ";
     for (int i = 0; i < rows.size(); i++) {
       CharacteristicsRow row = rows.get(i);
       query += "(\"" + engineName + "\", "
           + row.getPower() + ", " +
-          +row.getFrequency() + ", " +
-          +row.getEfficiency() + ", " +
-          +row.getCosFi() + ", " +
-          +row.getElectricityNominal220() + ", " +
-          +row.getElectricityNominal380() + ", " +
-          +row.getElectricityRatio() + ", " +
-          +row.getMomentsRatio() + ", " +
-          +row.getMomentsMaxRatio() + ", " +
-          +row.getMomentsMinRatio() + ")";
+          + row.getFrequency() + ", " +
+          + row.getEfficiency() + ", " +
+          + row.getCosFi() + ", " +
+          + row.getElectricityNominal115() + ", " +
+          + row.getElectricityNominal220() + ", " +
+          + row.getElectricityNominal380() + ", " +
+          + row.getElectricityRatio() + ", " +
+          + row.getMomentsRatio() + ", " +
+          + row.getMomentsMaxRatio() + ", " +
+          + row.getMomentsMinRatio() + ", " +
+          + row.getVoltage115() + ", " +
+          + row.getVoltage220_230() + ", " +
+          + row.getCapacity115() + ", " +
+          + row.getCapacity220() + ", " +
+          + row.getCapacity230() + ", " +
+          + row.getCriticalSlipping() + ")";
       query += (i == rows.size() - 1 ? ";" : ",");
     }
-    System.out.println(query);
     try {
       if (deleteOld) {
         dao.executeUpdate("DELETE FROM characteristics WHERE engineName = \"" + engineName + "\"");
@@ -106,7 +135,8 @@ public class EngineRepository extends Repository<Engine> {
     }
     names = names.substring(0, names.length() - 2);
     names += ")";
-    List<Engine> engines = dao.executeListQuery("SELECT * FROM engines WHERE name IN " + names, Engine.class);
+    List<Engine> engines = dao
+        .executeListQuery("SELECT * FROM engines WHERE name IN " + names, Engine.class);
     List<Engine> result = new ArrayList<>();
     for (CartItem i : items) {
       for (Engine e : engines) {
@@ -310,6 +340,10 @@ public class EngineRepository extends Repository<Engine> {
 
   public List<String> getPhotos(String engineName) {
     return dao.columnQuery("SELECT photo FROM photos WHERE engineName = \"" + engineName + "\"");
+  }
+
+  public List<Photo> getPhotos() {
+    return dao.executeListQuery("SELECT * FROM photos", Photo.class);
   }
 
   public EngineType getType(String typeId) {

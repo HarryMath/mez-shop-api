@@ -6,6 +6,7 @@ import com.mez.api.service.EngineService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class EngineController {
@@ -78,6 +79,11 @@ public class EngineController {
     public byte updateEngine(@RequestBody EngineUpload engine) {
         return engineService.save(engine,
             false); // isNew
+    }
+
+    @RequestMapping("/engines/loadFromFile")
+    public int saveFromFile(@RequestBody MultipartFile file) {
+        return engineService.saveFormFile(file);
     }
 
     @GetMapping("/engines/{engineName}/delete")

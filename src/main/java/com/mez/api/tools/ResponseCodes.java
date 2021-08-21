@@ -9,5 +9,6 @@ public abstract class ResponseCodes {
     public static final byte CLOUDINARY_ERROR = -5;
     public static final byte NOT_EMPTY = -6;
     public static final byte ALREADY_EXISTS = -7;
-    public static final byte UNKNOWN_ERROR = -8;
+    public static final byte BAD_FILE = -8;
+    public static final byte UNKNOWN_ERROR = -9;
 }

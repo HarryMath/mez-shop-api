@@ -14,5 +14,6 @@ public class Engine {
   private float priceCombi;
   private float priceFlanets;
   private float mass;
+  private float axisHeight;
   private String photo;
 }

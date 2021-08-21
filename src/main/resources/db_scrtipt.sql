@@ -36,7 +36,8 @@ CREATE TABLE engines (
     priceCombi FLOAT4 NOT NULL,
     priceFlanets FLOAT4 NOT NULL,
     photo TEXT,
-    mass float,
+    mass float not null,
+    axisHeight float not null,
 
     CONSTRAINT engine_manufact FOREIGN KEY (manufacturer) REFERENCES manufacturers(name),
     CONSTRAINT engine_type FOREIGN KEY (type) REFERENCES engineTypes(name)
@@ -48,14 +49,22 @@ CREATE TABLE characteristics (
     engineName varchar(30) NOT NULL,                        
     power FLOAT NOT NULL,                         # P (кВт)
     frequency INT NOT NULL,                       # Номинальная частота вращения (об/мин)
-    efficiency INT NOT NULL,                      # КПД (%)
+    efficiency float NOT NULL,                      # КПД (%)
     cosFi float NOT NULL,                         # cos fi
+    electricityNominal115 float,                  # ток номинальный (А) для напряжения 115В
     electricityNominal220 float,                  # ток номинальный (А) для напряжения 220В
     electricityNominal380 float,                  # ток номинальный (А) для напряжения 380В
     electricityRatio float,                       # Iп/Iн
     momentsRatio float,                           # Mп/Мн
     momentsMaxRatio float,                        # Mmax/Мн
     momentsMinRatio float,                        # Mmin/Мн
+    momentsMinRatio float,                        # Mmin/Мн
+    voltage115 float,                             # Uнс (115)
+    voltage220_230 float,                         # Uнс (220/230)
+    capacity115 float,                            # C(115), мкф
+    capacity220 float,                            # C(220), мкф
+    capacity230 float,                            # C(230), мкф  
+    criticalSlipping float,                       # %
     CONSTRAINT engine_character FOREIGN KEY (engineName) REFERENCES engines(name) ON DELETE CASCADE
 );
 
@@ -78,3 +87,5 @@ CREATE TABLE news (
     views int default 0,
     tags varchar(100)
 );
+
+DELETE FROM engines WHERE name = '4ВР63	';

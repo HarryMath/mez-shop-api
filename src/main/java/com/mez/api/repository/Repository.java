@@ -146,6 +146,27 @@ public abstract class Repository<T> {
     dao.executeUpdate(query);
   }
 
+  public void update(T object, String ignoredColumns) throws SQLException {
+    String query = "UPDATE " + tableName + " SET ";
+    Field[] fields = object.getClass().getDeclaredFields();
+    String id = "";
+    for (Field field: fields) {
+      try {
+        field.setAccessible(true);
+        if (field.isAnnotationPresent(PrimaryKey.class)) {
+          id = field.get(object).toString();
+        } else if (!ignoredColumns.contains(field.getName())) {
+          query += field.getName() + " = '" + field.get(object) + "',";
+        }
+        field.setAccessible(false);
+      } catch (IllegalAccessException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    query = query.substring(0, query.length() - 1) + " WHERE " + primaryKey + " = \"" + id + "\"";
+    dao.executeUpdate(query);
+  }
+
   public byte delete(String id) {
     try {
       dao.executeUpdate("DELETE FROM " + tableName + " WHERE " + primaryKey + " = \"" + id + "\"");

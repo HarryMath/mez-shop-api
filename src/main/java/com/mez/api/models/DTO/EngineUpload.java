@@ -10,8 +10,11 @@ public class EngineUpload {
   private String name;
   private String type;
   private String manufacturer;
-  private float price;
+  private float priceLapy;
+  private float priceCombi;
+  private float priceFlanets;
   private float mass;
+  private float axisHeight;
   private String photo;
 
   private List<CharacteristicsRow> characteristics;
