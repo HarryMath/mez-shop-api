@@ -17,13 +17,13 @@ public class NewsRepository extends Repository<Post> {
 
   public List<Post> get(int limit, int offset) {
     return dao.executeListQuery(
-        "SELECT * FROM news ORDER BY id LIMIT " + limit + " OFFSET " + offset,
+        "SELECT * FROM news ORDER BY id DESC LIMIT " + limit + " OFFSET " + offset,
         Post.class);
   }
 
   public List<PostPreview> getPreviews(int limit, int offset) {
     return dao.executeListQuery(
-        "SELECT id, title, date, beforePhotoText, photo FROM news ORDER BY id LIMIT " + limit + " OFFSET " + offset,
+        "SELECT id, title, date, beforePhotoText, photo FROM news ORDER BY id DESC LIMIT " + limit + " OFFSET " + offset,
         PostPreview.class);
   }
 

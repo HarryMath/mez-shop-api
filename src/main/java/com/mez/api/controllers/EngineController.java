@@ -65,8 +65,11 @@ public class EngineController {
     @GetMapping("/engines/{engineName}")
     public Object getOne(
             @PathVariable String engineName,
-            @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails) {
-        return engineService.getOne(engineName, withDetails);
+            @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails
+    ) {
+        String decodedName = engineName.replaceAll("%252F", "/");
+        decodedName = decodedName.replaceAll("%2F", "/");
+        return engineService.getOne(decodedName, withDetails);
     }
 
     @PutMapping("/engines/create")
