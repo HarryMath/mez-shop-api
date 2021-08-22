@@ -3,6 +3,7 @@ package com.mez.api.tools;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,16 @@ public class ImageRepository {
       e.printStackTrace();
       return null;
     }
+  }
+
+  public void delete(String link) {
+    Cloudinary cloudinary = new Cloudinary(url);
+    String[] path = link.split("/");
+    String imageName = path[path.length - 1].split("\\.")[0];
+    System.out.println(imageName);
+    try {
+      cloudinary.uploader().destroy(imageName, ObjectUtils.emptyMap());
+    } catch (IOException ignore) {}
   }
 
   public List<String> saveImages(List<MultipartFile> files) {

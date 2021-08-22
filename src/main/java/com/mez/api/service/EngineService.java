@@ -9,6 +9,7 @@ import com.mez.api.models.EngineType;
 import com.mez.api.models.Photo;
 import com.mez.api.repository.CharacteristicsRepository;
 import com.mez.api.repository.EngineRepository;
+import com.mez.api.tools.ImageRepository;
 import com.mez.api.tools.ResponseCodes;
 import com.mez.api.tools.excell.ExcelParser;
 import java.io.IOException;
@@ -24,12 +25,15 @@ public class EngineService {
 
   private final EngineRepository engineRepository;
   private final CharacteristicsRepository characteristicsRepository;
+  private final ImageRepository imageRepository;
   private final ModelMapper modelMapper;
 
   @Autowired
-  EngineService(EngineRepository repository1, CharacteristicsRepository repository2) {
+  EngineService(EngineRepository repository1, CharacteristicsRepository repository2,
+      ImageRepository repository3) {
     this.engineRepository = repository1;
     this.characteristicsRepository = repository2;
+    this.imageRepository = repository3;
     this.modelMapper = new ModelMapper();
   }
 

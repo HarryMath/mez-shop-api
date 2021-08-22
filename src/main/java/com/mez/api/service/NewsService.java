@@ -3,6 +3,7 @@ package com.mez.api.service;
 import com.mez.api.models.Post;
 import com.mez.api.repository.NewsRepository;
 import com.mez.api.tools.DateFormatter;
+import com.mez.api.tools.ImageRepository;
 import com.mez.api.tools.ResponseCodes;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 public class NewsService {
 
   private final NewsRepository newsRepository;
+  private final ImageRepository imageRepository;
 
   @Autowired
-  NewsService(NewsRepository repository) {
+  NewsService(NewsRepository repository, ImageRepository imageRepository) {
     this.newsRepository = repository;
+    this.imageRepository = imageRepository;
   }
 
   public Object get(int limit, int offset, boolean withDetails) {
@@ -39,6 +42,13 @@ public class NewsService {
   }
 
   public byte delete(int id) {
+    Post post = newsRepository.getById(String.valueOf(id));
+    if (post == null) {
+      return ResponseCodes.SUCCESS;
+    }
+    if (post.getPhoto() != null) {
+      imageRepository.delete(post.getPhoto());
+    }
     return newsRepository.delete(String.valueOf(id));
   }
 
