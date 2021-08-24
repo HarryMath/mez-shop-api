@@ -27,7 +27,10 @@ public class NewsService {
         newsRepository.getPreviews(limit, offset);
   }
 
-  public Post getOne(int id) {
+  public Post getOne(int id, boolean increaseViews) {
+    if (increaseViews) {
+      newsRepository.increaseViews(id);
+    }
     return newsRepository.getById(String.valueOf(id));
   }
 

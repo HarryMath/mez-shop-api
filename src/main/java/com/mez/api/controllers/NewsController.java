@@ -31,8 +31,11 @@ public class NewsController {
   }
 
   @GetMapping("/news/{id}")
-  public Post getOne(@PathVariable int id) {
-    return newsService.getOne(id);
+  public Post getOne(
+      @RequestParam(name = "increaseViews", required = false, defaultValue = "false") boolean increaseViews,
+      @PathVariable int id
+  ) {
+    return newsService.getOne(id, increaseViews);
   }
 
   @PutMapping("/news/create")

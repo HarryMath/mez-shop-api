@@ -1,5 +1,8 @@
 USE v27lxlsekmhtr59u;
 SET SQL_SAFE_UPDATES = 0;
+SET @MAX_QUESTIONS=0;
+
+SELECT * FROM news ORDER BY id DESC LIMIT 3 OFFSET 0;
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -88,4 +91,5 @@ CREATE TABLE news (
     tags varchar(100)
 );
 
-DELETE FROM engines WHERE name = '4ВР63	';
+SELECT * FROM news;
+UPDATE news SET views = views / 2 WHERE id > 0;
