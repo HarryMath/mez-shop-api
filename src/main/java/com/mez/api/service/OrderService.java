@@ -4,10 +4,13 @@ import com.mez.api.models.DTO.CartItem;
 import com.mez.api.models.Engine;
 import com.mez.api.models.Order;
 import com.mez.api.repository.EngineRepository;
+import com.mez.api.tools.ResponseCodes;
+import com.mez.api.tools.bots.TelegramBot;
 import com.mez.api.tools.excell.XlsxWriter;
 import com.mez.api.tools.bots.MailBot;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -24,16 +27,53 @@ public class OrderService {
   private final MailBot mailBot;
   private final XlsxWriter xlsxWriter;
   private final EngineRepository engineRepository;
+  private final TelegramBot telebot;
 
   @Autowired
   OrderService(MailBot mailBot, XlsxWriter xlsxWriter,
-      EngineRepository engineRepository) {
+      EngineRepository engineRepository, TelegramBot telebot) {
     this.mailBot = mailBot;
     this.xlsxWriter = xlsxWriter;
     this.engineRepository = engineRepository;
+    this.telebot = telebot;
   }
 
-  public String sendCheque(Order order) {
+  public byte processOrder(Order order) {
+    boolean isSend = telebot.sendMessage(
+        "Новый заказ!\n"
+        + composeContent(order.getItems(), "\n")
+        + "\nИмя: " + order.getName()
+        + "\nТелефон: " + order.getPhone()
+        + "\nпочта: " + order.getMail()
+    );
+    if (isSend) {
+      mailBot.send(order.getMail(),
+          "Заказ №" + getOrderNumber() + " на сайте mez-motor.ru",
+          "<h5>Вы заказли:</h5><hr>" +
+          composeContent(order.getItems(), "<br>") +
+          "<br>Спасибо за заказ! мы скоро с вами свяжемся!");
+      return ResponseCodes.SUCCESS;
+    } else {
+      return ResponseCodes.UNKNOWN_ERROR;
+    }
+  }
+
+  private int getOrderNumber() {
+    return (int) Math.round(1 + Math.random() * 9999);
+  }
+
+  private String composeContent(List<CartItem> items, String lineSeparator) {
+    String result = "";
+    float finalPrice = 0;
+    for (CartItem i : items) {{
+      result += i.getItemId() + " (" + i.getMontage() + ") " + i.getPrice() + "р * "
+          + i.getAmount() + "шт." + lineSeparator;
+      finalPrice += i.getAmount() * i.getPrice();
+    }}
+    return result + lineSeparator + "итоговая цена: " + finalPrice + "р.";
+  }
+
+  private String sendCheque(Order order) {
     try {
       List<CartItem> items = order.getItems();
       List<Engine> engines = engineRepository.getEngines(items);
@@ -50,13 +90,16 @@ public class OrderService {
       float totalPrice = 0;
       for (int i = 0; i < amount; i++) {
         try {
-          float price = engines.get(i).getPriceLapy();
+          final String montage = items.get(i).getMontage().toLowerCase(Locale.ROOT);
+          float price = montage.contains("лапы") ?engines.get(i).getPriceLapy() :
+              montage.contains("комби") ? engines.get(i).getPriceCombi() :
+                  engines.get(i).getPriceFlanets();
           int quantity = items.get(i).getAmount();
           totalPrice += price * quantity;
           Row row = i < 4 ? sheet.getRow(25 + i) :
               xlsxWriter.copyRow(workbook, sheet, sourceRow, 25 + i);
           row.getCell(1).setCellValue(i + 1);
-          row.getCell(7).setCellValue("Электродвигатель " + items.get(i).getItemId());
+          row.getCell(7).setCellValue("Электродвигатель " + items.get(i).getItemId() + montage);
           row.getCell(24).setCellValue(quantity);
           row.getCell(27).setCellValue("шт");
           row.getCell(29).setCellValue(price);

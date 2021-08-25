@@ -10,4 +10,5 @@ public class Order {
   private List<CartItem> items;
   private String name;
   private String mail;
+  private String phone;
 }
