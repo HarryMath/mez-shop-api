@@ -24,7 +24,7 @@ public class NewsController {
 
   @GetMapping("/news")
   public Object getNews(
-      @RequestParam(name = "limit", required = false, defaultValue = "999") int limit,
+      @RequestParam(name = "amount", required = false, defaultValue = "999") int limit,
       @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
       @RequestParam(name = "withDetails", required = false, defaultValue = "false") boolean withDetails) {
     return newsService.get(limit, offset, withDetails);
