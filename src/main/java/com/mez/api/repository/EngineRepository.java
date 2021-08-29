@@ -275,7 +275,7 @@ public class EngineRepository extends Repository<Engine> {
       }
       querySQL += ") ";
     }
-    if (phase.length() > 1) {
+    if (phase.length() > 0) {
       querySQL += "AND ( "
           + "(SELECT count(*) FROM characteristics WHERE characteristics.engineName = engines.name)"
           + " in (";
