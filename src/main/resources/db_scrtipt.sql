@@ -4,8 +4,12 @@ SET @MAX_QUESTIONS=0;
 
 SELECT * FROM news ORDER BY id DESC LIMIT 3 OFFSET 0;
 
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
+insert into staff (login, name, password) values ('Mikitinski', 'Никита Бортник', md5('popa'));
+insert into staff (login, name, password) values ('Kuzzza', 'Кирилл Кузнецоы', md5('h7j5q3'));
+SELECT * FROM staff;
+
+DROP TABLE IF EXISTS clients;
+CREATE TABLE clients (
 	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     googleId VARCHAR(100) UNIQUE,
 	mail VARCHAR(50) NOT NULL,
@@ -14,6 +18,14 @@ CREATE TABLE users (
     photo VARCHAR(200),
     password VARCHAR(256),
     isAdmin BOOLEAN
+);
+
+DROP TABLE IF EXISTS staff;
+CREATE TABLE staff (
+	login varchar(20) NOT NULL PRIMARY KEY,
+    password VARCHAR(256) NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    photo VARCHAR(200)
 );
 
 DROP TABLE IF EXISTS engineTypes;
@@ -91,5 +103,5 @@ CREATE TABLE news (
     tags varchar(100)
 );
 
-SELECT * FROM news;
+SELECT * FROM users;
 UPDATE news SET views = views / 2 WHERE id > 0;

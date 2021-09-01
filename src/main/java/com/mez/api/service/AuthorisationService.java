@@ -1,48 +1,41 @@
 package com.mez.api.service;
 
-import com.mez.api.models.User;
-import com.mez.api.repository.UsersRepository;
+import com.mez.api.models.Admin;
+import com.mez.api.repository.StaffRepository;
 import com.mez.api.tools.Encryptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthorisationService {
 
-    private static final Map<String, User> authorisedUsers = new HashMap<>();
-    private final UsersRepository usersRepository;
+  private static final Map<String, Admin> authorisedUsers = new HashMap<>();
+  private final StaffRepository usersRepository;
 
-    @Autowired
-    AuthorisationService(UsersRepository repository) {
-        this.usersRepository = repository;
-    }
+  @Autowired
+  AuthorisationService(StaffRepository repository) {
+    this.usersRepository = repository;
+  }
 
-    public boolean isAuthorised(String token) {
-        return authorisedUsers.containsKey(token);
-    }
+  public boolean isAuthorised(String token) {
+    return authorisedUsers.containsKey(token);
+  }
 
-    public User getCurrentUser(String token) {
-        return authorisedUsers.get(token);
-    }
+  public Admin getAuthorisedUser(String token) {
+    return authorisedUsers.get(token);
+  }
 
-    boolean authoriseUser(String mailOrPhone, String password, HttpServletResponse response) {
-        User user = mailOrPhone.contains("@") ?
-                usersRepository.getByMailAndPassword(mailOrPhone, password) :
-                usersRepository.getByPhoneAndPassword(mailOrPhone, password);
-        if(user == null) return false;
-        String token = Encryptor.encrypt(
-                String.valueOf(authorisedUsers.size() + Math.random()),
-                Encryptor.MD5);
-        authorisedUsers.put(token, user);
-        Cookie cookieToken = new Cookie("token", token);
-        cookieToken.setHttpOnly(true);
-        cookieToken.setPath("/");
-        response.addCookie(cookieToken);
-        return true;
+  public String authoriseUser(String mailOrPhone, String password) {
+    Admin user = usersRepository.getByLoginAndPassword(mailOrPhone, password);
+    if (user == null) {
+      return null;
     }
+    String token = Encryptor.encrypt(
+        String.valueOf(authorisedUsers.size() + Math.random()),
+        Encryptor.MD5);
+    authorisedUsers.put(token, user);
+    return token;
+  }
 }

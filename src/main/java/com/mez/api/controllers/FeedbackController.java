@@ -23,14 +23,20 @@ public class FeedbackController {
 
   @RequestMapping("/feedback")
   public int feedBack(@RequestBody FeedBack feedBack) {
-    String message = "Новое сообщение!";
-    message += "\nимя: " + feedBack.getName();
-    message += "\nконтакт: " + feedBack.getContact();
-    if (feedBack.getMessage() != null && feedBack.getMessage().length() > 0) {
-      message += "\nсообщение: " + feedBack.getMessage();
-    }
-    if (feedBack.getContact().contains("@")) {
-      mailBot.send(feedBack.getContact(), "Это тест", "Здравствуйте, " + feedBack.getName());
+    String message;
+    if (feedBack.getMessage() != null && feedBack.getMessage().startsWith("Когда позвонить: ")) {
+      message = "Заказ на телефонный звонок";
+      message += "\nимя: " + feedBack.getName();
+      message += "\nтелефон: " + feedBack.getContact();
+      if (feedBack.getMessage().length() > 18) {
+        message += "\n" + feedBack.getMessage();
+      }
+    } else {
+      message = "Новое сообщение!";
+      message += "\nконтакт: " + feedBack.getContact();
+      if (feedBack.getMessage() != null && feedBack.getMessage().length() > 0) {
+        message += "\nсообщение: " + feedBack.getMessage();
+      }
     }
     return telegramBot.sendMessage(message) ?
         ResponseCodes.SUCCESS :
