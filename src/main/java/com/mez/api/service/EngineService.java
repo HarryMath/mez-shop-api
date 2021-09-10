@@ -47,13 +47,13 @@ public class EngineService {
   public List<EnginePreview> find(
       int offset, int amount, String orderBy, String query,
       String types, String manufacturers, String phase,
-      String efficiency, String frequency, String power
+      String efficiency, String frequency, String power, String axisHeight
   ) {
     return convertToPreview(
         engineRepository.find(
             offset, amount, orderBy, query,
             types, manufacturers, phase,
-            efficiency, frequency, power)
+            efficiency, frequency, power, axisHeight)
     );
   }
 
@@ -69,10 +69,10 @@ public class EngineService {
   }
 
   public int count(String query, String types, String manufacturers, String phase,
-      String efficiency, String frequency, String power) {
+      String efficiency, String frequency, String power, String axisHeight) {
     return engineRepository.count(
         query, types, manufacturers, phase,
-        efficiency, frequency, power
+        efficiency, frequency, power, axisHeight
     );
   }
 

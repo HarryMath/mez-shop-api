@@ -152,10 +152,10 @@ public class EngineRepository extends Repository<Engine> {
   public List<Engine> find(
       int offset, int amount, String orderBy, String query,
       String types, String manufacturers, String phase,
-      String efficiency, String frequency, String power
+      String efficiency, String frequency, String power, String axisHeight
   ) {
     String querySQL = "SELECT"
-        + " engines.name, engines.manufacturer, engines.type,"
+        + " engines.name, engines.manufacturer, engines.type, engines.axisHeight,"
         + " engines.priceLapy, engines.priceCombi, engines.priceFlanets, engines.photo, engines.mass"
         + " FROM engines RIGHT JOIN characteristics ON engines.name = characteristics.engineName"
         + " WHERE length(engines.name) > 0 ";
@@ -163,6 +163,17 @@ public class EngineRepository extends Repository<Engine> {
       querySQL += "AND concat("
           + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
           + "manufacturer, name, type) REGEXP '" + query + "' ";
+    }
+    if (axisHeight.length() > 0) {
+      String[] heights = axisHeight.split(",");
+      querySQL += "AND axisHeight in (";
+      for (byte i = 0; i < heights.length; i++) {
+        querySQL += heights[i];
+        if (i != heights.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
     }
     if (types.length() > 0) {
       String[] separatedTypes = types.split(",");
@@ -242,7 +253,7 @@ public class EngineRepository extends Repository<Engine> {
 
   public int count(String query,
       String types, String manufacturers, String phase,
-      String efficiency, String frequency, String power
+      String efficiency, String frequency, String power, String axisHeight
   ) {
     String querySQL = "SELECT count(*) FROM"
         + " (SELECT engines.name"
@@ -252,6 +263,17 @@ public class EngineRepository extends Repository<Engine> {
       querySQL += "AND concat("
           + "(SELECT concat(engineTypes.fullDescription, engineTypes.shortDescription) FROM engineTypes WHERE engineTypes.name = engines.type), "
           + "manufacturer, name, type) REGEXP '" + query + "' ";
+    }
+    if (axisHeight.length() > 0) {
+      String[] heights = axisHeight.split(",");
+      querySQL += "AND axisHeight in (";
+      for (byte i = 0; i < heights.length; i++) {
+        querySQL += heights[i];
+        if (i != heights.length - 1) {
+          querySQL += ", ";
+        }
+      }
+      querySQL += ") ";
     }
     if (types.length() > 1) {
       String[] separatedTypes = types.split(",");

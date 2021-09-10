@@ -54,12 +54,13 @@ public class EngineController {
       @RequestParam(name = "efficiency", required = false, defaultValue = "") String efficiency,
       @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
       @RequestParam(name = "power", required = false, defaultValue = "") String power,
-      @RequestParam(name = "query", required = false, defaultValue = "") String query
+      @RequestParam(name = "query", required = false, defaultValue = "") String query,
+      @RequestParam(name = "axisHeight", required = false, defaultValue = "") String axisHeight
   ) {
     return engineService.find(
         offset, amount, orderBy, query, // order block
         types, manufacturers, phase, // classify block
-        efficiency, frequency, power // filters block
+        efficiency, frequency, power, axisHeight // filters block
     );
   }
 
@@ -71,11 +72,12 @@ public class EngineController {
       @RequestParam(name = "efficiency", required = false, defaultValue = "") String efficiency,
       @RequestParam(name = "frequency", required = false, defaultValue = "") String frequency,
       @RequestParam(name = "power", required = false, defaultValue = "") String power,
-      @RequestParam(name = "query", required = false, defaultValue = "") String query
+      @RequestParam(name = "query", required = false, defaultValue = "") String query,
+      @RequestParam(name = "axisHeight", required = false, defaultValue = "") String axisHeight
   ) {
     return engineService.count(
         query, types, manufacturers, phase, // classify block
-        efficiency, frequency, power // filters block
+        efficiency, frequency, power, axisHeight // filters block
     );
   }
 

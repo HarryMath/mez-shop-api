@@ -4,8 +4,9 @@ SET @MAX_QUESTIONS=0;
 
 SELECT * FROM news ORDER BY id DESC LIMIT 3 OFFSET 0;
 
+DELETE FROM staff;
 insert into staff (login, name, password) values ('Mikitinski', 'Никита Бортник', md5('popa'));
-insert into staff (login, name, password) values ('Kuzzza', 'Кирилл Кузнецоы', md5('h7j5q3'));
+insert into staff (login, name, password) values ('Kuzzza', 'Кирилл Кузнецов', md5('h7j5q3'));
 SELECT * FROM staff;
 
 DROP TABLE IF EXISTS clients;
@@ -103,5 +104,5 @@ CREATE TABLE news (
     tags varchar(100)
 );
 
-SELECT * FROM users;
+SELECT * FROM staff;
 UPDATE news SET views = views / 2 WHERE id > 0;
