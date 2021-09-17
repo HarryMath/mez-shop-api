@@ -310,7 +310,7 @@ public class EngineRepository extends Repository<Engine> {
       }
       querySQL += ")) ";
     }
-    if (efficiency.length() > 3) {
+    if (efficiency.length() > 2) {
       querySQL += "AND (";
       String[] separated = efficiency.split(",");
       for (byte i = 0; i < separated.length; i++) {
@@ -322,7 +322,7 @@ public class EngineRepository extends Repository<Engine> {
       }
       querySQL += ") ";
     }
-    if (frequency.length() > 3) {
+    if (frequency.length() > 2) {
       querySQL += "AND (";
       String[] separated = frequency.split(",");
       for (byte i = 0; i < separated.length; i++) {
@@ -334,7 +334,7 @@ public class EngineRepository extends Repository<Engine> {
       }
       querySQL += ") ";
     }
-    if (power.length() > 3) {
+    if (power.length() > 2) {
       querySQL += "AND (";
       String[] separated = power.split(",");
       for (byte i = 0; i < separated.length; i++) {
