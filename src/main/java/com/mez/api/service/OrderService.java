@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,8 @@ public class OrderService {
   private final XlsxWriter xlsxWriter;
   private final EngineRepository engineRepository;
   private final TelegramBot telebot;
+  @Value("${mez.cheque}")
+  private String cheque;
 
   @Autowired
   OrderService(MailBot mailBot, XlsxWriter xlsxWriter,
@@ -49,9 +52,11 @@ public class OrderService {
     if (isSend) {
       mailBot.send(order.getMail(),
           "Заказ №" + getOrderNumber() + " на сайте mez-motor.ru",
-          "<h5>Вы заказли:</h5><hr>" +
-          composeContent(order.getItems(), "<br>") +
-          "<br>Спасибо за заказ! мы скоро с вами свяжемся!");
+          "<div style=\"font-size: 14px\"><div>Здравствуйте, " + order.getName() + "</div>" +
+          "<h3 style=\"width:100%;border-bottom:1px solid #999999\">Вы заказли:</h3>" +
+          composeContent(order.getItems(), "<br>") + "<br>" +
+          "<h4 style=\"margin-bottom:1px\">Счёт для оплаты:</h4>" +
+          cheque + "<br><h5>Спасибо за заказ! мы скоро с вами свяжемся!</h5></div>");
       return ResponseCodes.SUCCESS;
     } else {
       return ResponseCodes.UNKNOWN_ERROR;
