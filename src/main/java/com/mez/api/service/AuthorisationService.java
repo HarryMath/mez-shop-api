@@ -20,6 +20,7 @@ public class AuthorisationService {
   }
 
   public boolean isAuthorised(String token) {
+    System.out.println("checking authorisation by " + token);
     return authorisedUsers.containsKey(token);
   }
 
