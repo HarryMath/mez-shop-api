@@ -48,7 +48,7 @@ public class UsersController {
       HttpServletResponse response
   ) {
     String token = authorisationService.authoriseUser(mailOrPhone, password);
-    if (token.length() > 0) {
+    if (token != null &&  token.length() > 0) {
       Cookie cookieToken = new Cookie("token", token);
       cookieToken.setHttpOnly(false);
       cookieToken.setPath("/");

@@ -40,6 +40,7 @@ public class EngineController {
     if (authService.isAuthorised(token)) {
       return engineService.get(offset, amount, withDetails);
     }
+    System.out.println("Not authorised");
     return null;
   }
 

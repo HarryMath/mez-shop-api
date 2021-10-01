@@ -2,7 +2,8 @@ USE v27lxlsekmhtr59u;
 SET SQL_SAFE_UPDATES = 0;
 SET @MAX_QUESTIONS=0;
 
-SELECT * FROM news ORDER BY id DESC LIMIT 3 OFFSET 0;
+DELETE FROM photos WHERE engineName = 'АИРС80В8';
+SELECT * FROM photos;
 
 DELETE FROM staff;
 insert into staff (login, name, password) values ('Mikitinski', 'Никита Бортник', md5('popa'));
@@ -104,5 +105,6 @@ CREATE TABLE news (
     tags varchar(100)
 );
 
-SELECT * FROM staff;
+DELETE FROM engines WHERE axisHeight = 10;
+SELECT axisHeight FROM engines GROUP BY axisHeight ORDER BY axisHeight;
 UPDATE news SET views = views / 2 WHERE id > 0;
