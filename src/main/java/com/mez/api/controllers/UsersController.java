@@ -50,8 +50,8 @@ public class UsersController {
     String token = authorisationService.authoriseUser(mailOrPhone, password);
     if (token != null &&  token.length() > 0) {
       Cookie cookieToken = new Cookie("token", token);
-      cookieToken.setHttpOnly(false);
-      cookieToken.setPath("/");
+      cookieToken.setHttpOnly(true);
+      // cookieToken.setPath("/");
       response.addCookie(cookieToken);
     }
     return token;

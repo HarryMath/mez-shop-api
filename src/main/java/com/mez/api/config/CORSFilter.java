@@ -20,7 +20,7 @@ public class CORSFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "GET, PUT");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Max-Age", "60");
-        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, token, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, token, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, set-cookie, cookie");
         chain.doFilter(request, resp);
     }
 
