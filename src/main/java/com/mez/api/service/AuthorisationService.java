@@ -36,6 +36,7 @@ public class AuthorisationService {
         String.valueOf(authorisedUsers.size() + Math.random()),
         Encryptor.MD5);
     authorisedUsers.put(token, user);
+    System.out.println("User authorised under token " + token);
     return token;
   }
 }
