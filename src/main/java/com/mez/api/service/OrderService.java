@@ -59,14 +59,14 @@ public class OrderService {
       final String mailContent =
           "<div style=\"font-size: 14px\"><div>Здравствуйте, " + order.getName() + " </div>" +
           "<h3 style=\"width:100%;border-bottom:1px solid #999999\">Вы заказали:</h3>" +
-          composeContent(items, "<br>") + "<br>" +
-          "<h4 style=\"margin-bottom:1px\">Счёт для оплаты:</h4>" +
-          cheque + "<br><h5>Спасибо за заказ! мы скоро с вами свяжемся!</h5></div>";
+          composeContent(items, "<br>") +
+          "<br><h5>Спасибо за заказ! мы скоро с вами свяжемся!</h5></div>";
       try {
         final byte[] document = generateCheque(items, engines);
         mailBot.send(order.getMail(), mailTitle, mailContent, document, "чек.pdf");
       } catch (Exception ignore) {
-        mailBot.send(order.getMail(), mailTitle, mailContent);
+        mailBot.send(order.getMail(), mailTitle, mailContent +
+            "<br><h4 style=\"margin-bottom:1px\">Счёт для оплаты:</h4>" + cheque);
       }
       return ResponseCodes.SUCCESS;
     } else {
