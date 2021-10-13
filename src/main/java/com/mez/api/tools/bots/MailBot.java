@@ -21,7 +21,7 @@ public class MailBot {
 
   public boolean send(String mailTo, String title, String text) {
     try {
-      InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
+      InternetAddress from = new InternetAddress("mez-sbyt2@mail.ru", "MEZ-SHOP-BOT");
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper messageHelper = new MimeMessageHelper(message, "UTF-8");
       messageHelper.setFrom(from);
@@ -39,7 +39,7 @@ public class MailBot {
 
   public String send(String mailTo, String title, String text, byte[] file, String fileName) {
     try {
-      InternetAddress from = new InternetAddress("mez-shop-bot@mez.ru", "MEZ-SHOP-BOT");
+      InternetAddress from = new InternetAddress("mez-sbyt2@mail.ru", "MEZ-SHOP-BOT");
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
       messageHelper.setFrom(from);
