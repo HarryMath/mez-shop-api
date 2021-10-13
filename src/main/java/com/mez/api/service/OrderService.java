@@ -4,6 +4,7 @@ import com.mez.api.models.DTO.CartItem;
 import com.mez.api.models.Engine;
 import com.mez.api.models.Order;
 import com.mez.api.repository.EngineRepository;
+import com.mez.api.tools.DateFormatter;
 import com.mez.api.tools.ResponseCodes;
 import com.mez.api.tools.bots.TelegramBot;
 import com.mez.api.tools.excell.XlsxWriter;
@@ -121,9 +122,11 @@ public class OrderService {
       sheet.getRow(28 + amount).getCell(37).setCellValue(totalPrice + "р.");
     } catch (NullPointerException ignore) { }
     try {
+      sheet.getRow(10).getCell(1).setCellValue(
+          "Счет на оплату от " + DateFormatter.nowDateString() + " г.");
       CellStyle style = sheet.getRow(18).getCell(8).getCellStyle();
       sheet.getRow(20).getCell(8).setCellStyle(style);
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
     /* try {
